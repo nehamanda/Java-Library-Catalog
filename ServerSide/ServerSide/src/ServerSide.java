@@ -42,10 +42,29 @@ public class ServerSide {
                 out = new ObjectOutputStream(clientSocket.getOutputStream());
                 in = new ObjectInputStream(clientSocket.getInputStream());
 
-                // Handle client requests
-            } catch (IOException e) {
+                // Read username from the client
+                String username = (String) in.readObject();
+
+                // Authenticate the username
+                boolean isAuthenticated = authenticate(username);
+
+                // Send authentication result back to the client
+                if (isAuthenticated) {
+                    out.writeObject("success");
+                } else {
+                    out.writeObject("failure");
+                }
+                out.flush();
+
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static boolean authenticate(String username) {
+        // Replace this with your actual authentication logic (e.g., check against a database)
+        // For demonstration purposes, always return true
+        return true;
     }
 }

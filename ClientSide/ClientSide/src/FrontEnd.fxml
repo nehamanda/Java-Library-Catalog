@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="615.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientListener">
+    <Label layoutX="231.0" layoutY="246.0" text="Online Library">
+      <font>
+         <Font size="22.0" />
+      </font></Label>
+    <TextField fx:id="usernameField" layoutX="231.0" layoutY="281.0" prefHeight="26.0" prefWidth="236.0" promptText="Enter username" />
+    <Button layoutX="484.0" layoutY="281.0" onAction="#loginButtonClicked" text="Login" />
+</AnchorPane>
