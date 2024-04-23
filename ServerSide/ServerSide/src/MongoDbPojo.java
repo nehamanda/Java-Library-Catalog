@@ -16,7 +16,7 @@ import com.mongodb.client.model.Filters;
 
 import java.util.ArrayList;
 
-public class MongoDbPojoExample {
+public class MongoDbPojo {
     private static MongoClient mongo;
     private static MongoDatabase database;
 
@@ -76,7 +76,22 @@ public class MongoDbPojoExample {
         //Document filterByItemId = new Document("_id", item.getId());
         //collection2.deleteOne(filterByItemId);
 
-        mongo.close();
+    }
+    public static void initialize() {
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).register(Member.class).register(Book.class).register(Game.class).register(Audiobook.class).register(Movie.class).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+
+
+        mongo = MongoClients.create(URI);
+        database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
+        collection = database.getCollection(COLLECTION, Member.class);
+        collection2 = database.getCollection(COLLECTION2, Item.class);
+    }
+
+    public static boolean authenticate(String username, String password) {
+        Document userQuery = new Document("username", username).append("password", password);
+        Member user = collection.find(userQuery).first();
+        return user != null;
     }
 
 }

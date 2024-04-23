@@ -24,8 +24,11 @@ public class ClientListener {
     private Scene scene;
     private Parent root;
 
+    private String user;
+
     public void loginButtonClicked(ActionEvent event) {
         String enteredUsername = usernameField.getText();
+        user = enteredUsername;
         String enteredPassword = passwordField.getText();
         if (!enteredUsername.isEmpty() && !enteredPassword.isEmpty()) {
             try (Socket socket = new Socket("localhost", 12345);

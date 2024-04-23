@@ -10,6 +10,7 @@ public class ServerSide {
     public static void main(String[] args) {
         members = new ArrayList<>();
         catalog = new ArrayList<>();
+        MongoDbPojo.initialize();
         // Initialize catalog and members from storage
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -47,7 +48,7 @@ public class ServerSide {
                 String password = (String) in.readObject();
 
                 // Authenticate the username
-                boolean isAuthenticated = authenticate(username, password);
+                boolean isAuthenticated = MongoDbPojo.authenticate(username, password);
 
                 // Send authentication result back to the client
                 if (isAuthenticated) {
@@ -63,9 +64,5 @@ public class ServerSide {
         }
     }
 
-    private static boolean authenticate(String username, String password) {
-        // Replace this with your actual authentication logic (e.g., check against a database)
-        // For demonstration purposes, always return true
-        return true;
-    }
+
 }
