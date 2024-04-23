@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mongoDriver">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/mongoDriver.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

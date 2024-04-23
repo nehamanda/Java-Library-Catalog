@@ -1,11 +1,12 @@
 public class Item {
-    private String itemType;
-    private String title;
-    private String author;
-    private boolean available;
-    // Other properties and constructors
-
-    public synchronized boolean isAvailable() {
+    public String title;
+    public String itemType;
+    public boolean available = true;
+    public String year;
+    public String getTitle() {
+        return title;
+    }
+    public boolean isAvailable() {
         return available;
     }
 
@@ -13,5 +14,14 @@ public class Item {
         this.available = available;
     }
 
-    // Other methods like checkIn, checkOut, etc.
+    public String getItemType() {
+        return itemType;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    // Common methods for all types of items
 }
+

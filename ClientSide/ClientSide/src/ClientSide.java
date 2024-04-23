@@ -1,3 +1,4 @@
+
 import javafx.application.Application;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,35 +12,26 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientSide extends Application {
+    static Stage primaryStage;
+    private static Scene scene1;
+    private static Parent root2;
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
-        primaryStage.setScene(new Scene(root, 761, 615));
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
         primaryStage.setTitle("Library Client");
+
+        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("LibraryCatalog.fxml"));
+        root2 = loader2.load();
+
         primaryStage.show();
+        this.primaryStage = primaryStage;
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public static boolean login(String username) {
-        try (Socket socket = new Socket("localhost", 12345);
-             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
-            // Send the username to the server
-            out.writeObject(username);
-            out.flush();
-
-            // Receive response from the server
-            String response = (String) in.readObject();
-
-            // Check if login was successful
-            return response.equals("success");
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

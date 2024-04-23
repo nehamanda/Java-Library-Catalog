@@ -1,26 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="615.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientListener">
-    <ImageView fitHeight="615.0" fitWidth="761.0" pickOnBounds="true">
+<AnchorPane prefHeight="603.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientListener">
+    <ImageView fitHeight="603.0" fitWidth="815.0" pickOnBounds="true">
         <image>
             <Image url="@Images/shelves.jpg" />
         </image></ImageView>
-    <Label layoutX="210.0" layoutY="167.0" prefHeight="48.0" prefWidth="349.0" text="Manda Public Library" textFill="#b17575">
+   <Rectangle arcHeight="5.0" arcWidth="5.0" height="306.0" layoutX="190.0" layoutY="115.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="436.0" />
+    <Label layoutX="238.0" layoutY="173.0" prefHeight="48.0" prefWidth="349.0" text="Manda Public Library" textFill="#b17575">
       <font>
          <Font name="Headline R" size="27.0" />
       </font></Label>
-    <TextField fx:id="usernameField" layoutX="209.0" layoutY="236.0" prefHeight="26.0" prefWidth="350.0" promptText="Enter username">
+    <TextField fx:id="usernameField" layoutX="233.0" layoutY="241.0" prefHeight="26.0" prefWidth="350.0" promptText="Username">
       <font>
          <Font name="Fira Code Medium" size="12.0" />
-      </font></TextField>
-    <Button layoutX="341.0" layoutY="308.0" onAction="#loginButtonClicked" prefHeight="29.0" prefWidth="78.0" text="Login" textFill="#840606">
+      </font>
+      <cursor>
+         <Cursor fx:constant="TEXT" />
+      </cursor></TextField>
+    <Button layoutX="369.0" layoutY="341.0" onAction="#loginButtonClicked" prefHeight="29.0" prefWidth="78.0" text="Login" textFill="#840606">
       <font>
-         <Font name="Fira Code Medium" size="14.0" />
+         <Font name="Headline R" size="14.0" />
       </font></Button>
+   <TextField fx:id="passwordField" layoutX="233.0" layoutY="279.0" prefHeight="26.0" prefWidth="350.0" promptText="Password">
+      <font>
+         <Font name="Fira Code Medium" size="12.0" />
+      </font>
+      <cursor>
+         <Cursor fx:constant="TEXT" />
+      </cursor>
+   </TextField>
 
 </AnchorPane>
