@@ -26,6 +26,8 @@ public class ClientListener {
 
     private String user;
 
+    public static Socket socket;
+
     public void loginButtonClicked(ActionEvent event) {
         String enteredUsername = usernameField.getText();
         user = enteredUsername;
@@ -34,6 +36,8 @@ public class ClientListener {
             try (Socket socket = new Socket("localhost", 12345);
                  ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                  ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+                this.socket = socket;
 
                 // Send the username to the server
                 out.writeObject(enteredUsername);

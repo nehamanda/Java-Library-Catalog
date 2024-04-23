@@ -30,4 +30,3 @@ public class Item {
 
     // Common methods for all types of items
 }
-

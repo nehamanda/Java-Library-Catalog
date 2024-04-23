@@ -58,6 +58,15 @@ public class ServerSide {
                 }
                 out.flush();
 
+                while (true) {
+                    String request = (String)in.readObject();
+                    if (request instanceof String && request.equals("getItems")) {
+                        List<Item> items = MongoDbPojo.retrieveItems(); // Implement this method to fetch items from MongoDB
+                        out.writeObject(items); // Send items to client
+                    }
+                    // Add more handlers for other types of requests as needed
+                }
+
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

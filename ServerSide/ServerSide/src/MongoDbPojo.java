@@ -15,6 +15,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MongoDbPojo {
     private static MongoClient mongo;
@@ -42,11 +43,11 @@ public class MongoDbPojo {
         //CREATE
 
         ArrayList<Item> itemList = new ArrayList<>();
-        itemList.add(new Book("book", "Anxious People", "Backman, Fredrik", 352, "2020"));
-        itemList.add(new Book("book", "Wonder", "Palacio, R.J.", 310, "2012"));
-        itemList.add(new Game("game", "Life", "1990"));
-        itemList.add(new Movie("movie", "Chungking Express", "1h 37m", "1994"));
-        itemList.add(new Audiobook("audiobook", "The Poppy War", "Kuang, R. F.", "19h 27m", "2018"));
+        itemList.add(new Book("book", "Anxious People", "Backman, Fredrik", 352, "2020", "https://m.media-amazon.com/images/I/81+NiUsL3qL._AC_UF1000,1000_QL80_.jpg"));
+        itemList.add(new Book("book", "Wonder", "Palacio, R.J.", 310, "2012", "https://upload.wikimedia.org/wikipedia/en/0/03/Wonder_Cover_Art.png"));
+        itemList.add(new Game("game", "Life", "1990", "https://m.media-amazon.com/images/I/81s1uoBIf0L._AC_UF894,1000_QL80_.jpg"));
+        itemList.add(new Movie("movie", "Chungking Express", "1h 37m", "1994", "https://s3.amazonaws.com/nightjarprod/content/uploads/sites/192/2021/11/01151557/43I9DcNoCzpyzK8JCkJYpHqHqGG.jpg"));
+        itemList.add(new Audiobook("audiobook", "The Poppy War", "Kuang, R. F.", "19h 27m", "2018", "https://m.media-amazon.com/images/I/71ZVpkRIGsL._AC_UF1000,1000_QL80_.jpg"));
         collection2.insertMany(itemList);
 
 
@@ -92,6 +93,86 @@ public class MongoDbPojo {
         Document userQuery = new Document("username", username).append("password", password);
         Member user = collection.find(userQuery).first();
         return user != null;
+    }
+
+    public static List retrieveItems() {
+        List<Item> items = new ArrayList<>();
+        for (Item doc : collection2.find()) {
+            // Parse document fields and create Item objects based on item type
+            String itemType = doc.getItemType();
+
+            // Create corresponding item object based on item type
+            Item item;
+            switch (itemType) {
+                case "book":
+                    item = createBookFromDocument(doc);
+                    break;
+                case "movie":
+                    item = createMovieFromDocument(doc);
+                    break;
+                case "audiobook":
+                    item = createAudiobookFromDocument(doc);
+                    break;
+                case "game":
+                    item = createGameFromDocument(doc);
+                    break;
+                default:
+                    // Handle unknown item types or throw an exception
+                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+            }
+
+            // Add item to the list
+            items.add(item);
+        }
+        return items;
+    }
+    private static Book createBookFromDocument(Item doc) {
+        // Extract fields from document and create Book object
+        Book book = (Book) doc;
+        String itemType = book.getItemType();
+        String title = book.getTitle();
+        String author = book.getAuthor();
+        int pageCount = book.getPages();
+        String year = doc.getYear();
+        String imageUrl = doc.getImageURL();
+
+        return new Book(itemType, title, author, pageCount, year, imageUrl);
+    }
+
+    private static Movie createMovieFromDocument(Item doc) {
+        // Extract fields from document and create Movie object
+        Movie movie = (Movie) doc;
+        String itemType = movie.getItemType();
+        String title = movie.getTitle();
+        String length = movie.getLength();
+        String year = movie.getYear();
+        String imageUrl = movie.getImageURL();
+
+        return new Movie(itemType, title, length, year, imageUrl);
+    }
+
+    private static Audiobook createAudiobookFromDocument(Item doc) {
+        // Extract fields from document and create Audiobook object
+        Audiobook Abook = (Audiobook) doc;
+        String itemType = Abook.getItemType();
+        String title = Abook.getTitle();
+        String author = Abook.getAuthor();
+        String length = Abook.getLength();
+        String year = Abook.getYear();
+        String imageUrl = Abook.getImageURL();
+
+        return new Audiobook(itemType, title, author, length, year, imageUrl);
+    }
+
+    private static Game createGameFromDocument(Item doc) {
+        // Extract fields from document and create Game object
+        Book book = (Book) doc;
+        String itemType = book.getItemType();
+        String title = book.getTitle();
+        String year = doc.getYear();
+        String imageUrl = doc.getImageURL();
+
+        return new Game(itemType, title, year, imageUrl);
     }
 
 }
