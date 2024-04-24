@@ -155,6 +155,7 @@ public class MongoDbPojo {
             }
             item.replace("available", true, false);
             collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+            checkedout.setAvailable(false);
             borrowList.add(checkedout);
             member.replace("borrowedItems", borrowList);
             collection.findOneAndReplace(Filters.eq("username", username), member);
@@ -168,6 +169,7 @@ public class MongoDbPojo {
         if (!item.getBoolean("available")) {
             Document query = new Document("username", username);
             Document member = collection.find(query).first();
+            List<Item> borrowList = (List) member.get("borrowedItems");
             String itemType = item.getString("itemType");
             Item checkedout;
             switch (itemType) {
@@ -189,7 +191,8 @@ public class MongoDbPojo {
             }
             item.replace("available", false, true);
             collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-            //member.returnItem(checkedout);
+            borrowList.remove(checkedout);
+            member.replace("borrowedItems", borrowList);
             collection.findOneAndReplace(Filters.eq("username", username), member);
             return true;
         }
@@ -199,7 +202,37 @@ public class MongoDbPojo {
     public static List retrieveUserList(String user) {
         Document query = new Document("username", user);
         Document member = collection.find(query).first();
-        return member.getList("borrowedItems", List.class);
+        List<Document> itemdocs =  (List) member.get("borrowedItems");
+        List<Item> items = new ArrayList<>();
+        for (Document doc : itemdocs) {
+            // Parse document fields and create Item objects based on item type
+            String itemType = doc.getString("itemType");
+            //items.add(doc);
+
+            // Create corresponding item object based on item type
+            Item item;
+            switch (itemType) {
+                case "book":
+                    item = createBookFromDocument(doc);
+                    break;
+                case "movie":
+                    item = createMovieFromDocument(doc);
+                    break;
+                case "audiobook":
+                    item = createAudiobookFromDocument(doc);
+                    break;
+                case "game":
+                    item = createGameFromDocument(doc);
+                    break;
+                default:
+                    // Handle unknown item types or throw an exception
+                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+            }
+
+            // Add item to the list
+            items.add(item);
+        }
+        return items;
 
     }
 

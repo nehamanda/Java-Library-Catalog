@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Item implements Serializable {
     public String title;
@@ -28,6 +29,23 @@ public class Item implements Serializable {
 
     public String getImageURL() {
         return imageURL;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return available == item.available &&
+                Objects.equals(title, item.title) &&
+                Objects.equals(itemType, item.itemType) &&
+                Objects.equals(year, item.year) &&
+                Objects.equals(imageURL, item.imageURL);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, itemType, available, year, imageURL);
     }
 
     // Common methods for all types of items

@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javax.swing.text.Document;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -56,12 +57,14 @@ public class CatalogListener implements Initializable {
     }
 
     public void initializeUser(String user) throws IOException, ClassNotFoundException {
+        initializeSocket();
         username = user;
         member = new Member(username);
-        /*writer.println("init");
+        writer.println("init");
         writer.println(username);
         writer.flush();
-        member.borrowedItems = (List<Item>) in.readObject();*/
+        List<Item> items = (List<Item>) in.readObject();
+        member.borrowedItems = items;
 
     }
 
