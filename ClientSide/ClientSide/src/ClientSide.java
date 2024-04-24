@@ -17,13 +17,17 @@ public class ClientSide extends Application {
     private static Parent root2;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
-        Scene scene = new Scene(root);
+        FXMLLoader fxml = new FXMLLoader(getClass().getResource("FrontEnd.fxml"));
+        Scene scene = new Scene(fxml.load());
+        ClientListener listener = fxml.getController();
+        listener.initializeSocket();
         primaryStage.setScene(scene);
         primaryStage.setTitle("Library Client");
 
-        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("LibraryCatalog.fxml"));
-        root2 = loader2.load();
+        //FXMLLoader loader2 = new FXMLLoader(getClass().getResource("LibraryCatalog.fxml"));
+        //CatalogListener catalog = loader2.getController();
+        //catalog.initializeSocket();
+        //root2 = loader2.load();
 
         primaryStage.show();
         this.primaryStage = primaryStage;

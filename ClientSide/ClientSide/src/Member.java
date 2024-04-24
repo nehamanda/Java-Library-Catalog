@@ -4,12 +4,11 @@ import java.util.List;
 public class Member {
     private String username;
     private String password;
-    private List<Item> borrowedItems;
+    public List<Item> borrowedItems;
     // Other properties and constructors
     public Member() {}
-    public Member (String username, String password) {
+    public Member(String username) {
         this.username = username;
-        this.password = password;
         borrowedItems = new ArrayList<Item>();
     }
 
@@ -21,16 +20,19 @@ public class Member {
         return password;
     }
 
-    public List<Item> getBorrowedItems() {
-        return borrowedItems;
-    }
-
     public synchronized void borrowItem(Item item) {
         borrowedItems.add(item);
     }
 
     public synchronized void returnItem(Item item) {
         borrowedItems.remove(item);
+    }
+
+    public boolean hasItem(Item item) {
+        if (borrowedItems.contains(item)) {
+            return true;
+        }
+        return false;
     }
 
     // Other methods

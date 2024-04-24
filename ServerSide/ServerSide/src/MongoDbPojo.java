@@ -21,8 +21,8 @@ public class MongoDbPojo {
     private static MongoClient mongo;
     private static MongoDatabase database;
 
-    private static MongoCollection<Member> collection;
-    private static MongoCollection<Item> collection2;
+    private static MongoCollection<Document> collection;
+    private static MongoCollection<Document> collection2;
 
     private static final String URI = "mongodb+srv://neharmanda:aAqZOq4ZHj08CfXx@cluster0.0qulmhi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     private static final String DB = "library";
@@ -37,27 +37,27 @@ public class MongoDbPojo {
 
         mongo = MongoClients.create(URI);
         database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
-        collection = database.getCollection(COLLECTION, Member.class);
-        collection2 = database.getCollection(COLLECTION2, Item.class);
+        collection = database.getCollection(COLLECTION);
+        collection2 = database.getCollection(COLLECTION2);
 
         //CREATE
 
-        ArrayList<Item> itemList = new ArrayList<>();
+        /*ArrayList<Item> itemList = new ArrayList<>();
         itemList.add(new Book("book", "Anxious People", "Backman, Fredrik", 352, "2020", "https://m.media-amazon.com/images/I/81+NiUsL3qL._AC_UF1000,1000_QL80_.jpg"));
         itemList.add(new Book("book", "Wonder", "Palacio, R.J.", 310, "2012", "https://upload.wikimedia.org/wikipedia/en/0/03/Wonder_Cover_Art.png"));
         itemList.add(new Game("game", "Life", "1990", "https://m.media-amazon.com/images/I/81s1uoBIf0L._AC_UF894,1000_QL80_.jpg"));
         itemList.add(new Movie("movie", "Chungking Express", "1h 37m", "1994", "https://s3.amazonaws.com/nightjarprod/content/uploads/sites/192/2021/11/01151557/43I9DcNoCzpyzK8JCkJYpHqHqGG.jpg"));
         itemList.add(new Audiobook("audiobook", "The Poppy War", "Kuang, R. F.", "19h 27m", "2018", "https://m.media-amazon.com/images/I/71ZVpkRIGsL._AC_UF1000,1000_QL80_.jpg"));
-        collection2.insertMany(itemList);
+        //collection2.insertMany(itemList);*/
 
 
-        /*ArrayList<Member> memberList = new ArrayList<>();
+        ArrayList<Member> memberList = new ArrayList<>();
         memberList.add(new Member("neha", "0818"));
         memberList.add(new Member("shikha", "0511"));
         memberList.add(new Member("nehak", "0213"));
         memberList.add(new Member("jake", "0712"));
         memberList.add(new Member("connor", "0319"));
-        collection.insertMany(memberList);*/
+        //collection.insertMany(memberList);
 
         //FIND AND READ
         //Item item = collection2.find(Filters.eq("name", "Adidas Ultraboost")).first();
@@ -68,10 +68,10 @@ public class MongoDbPojo {
         //collection2.findOneAndReplace(Filters.eq("name", "Adidas Ultraboost"), item);
 
         //READ ALL
-        MongoCursor cursor = collection2.find(Filters.empty()).cursor();
+        /*MongoCursor cursor = collection2.find(Filters.empty()).cursor();
         while(cursor.hasNext()) {
             System.out.println("ITERATING: " + ((Item)cursor.next()).toString());
-        }
+        }*/
 
         //DELETE
         //Document filterByItemId = new Document("_id", item.getId());
@@ -85,21 +85,22 @@ public class MongoDbPojo {
 
         mongo = MongoClients.create(URI);
         database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
-        collection = database.getCollection(COLLECTION, Member.class);
-        collection2 = database.getCollection(COLLECTION2, Item.class);
+        collection = database.getCollection(COLLECTION);
+        collection2 = database.getCollection(COLLECTION2);
     }
 
     public static boolean authenticate(String username, String password) {
         Document userQuery = new Document("username", username).append("password", password);
-        Member user = collection.find(userQuery).first();
+        Document user = collection.find(userQuery).first();
         return user != null;
     }
 
     public static List retrieveItems() {
         List<Item> items = new ArrayList<>();
-        for (Item doc : collection2.find()) {
+        for (Document doc : collection2.find()) {
             // Parse document fields and create Item objects based on item type
-            String itemType = doc.getItemType();
+            String itemType = doc.getString("itemType");
+            //items.add(doc);
 
             // Create corresponding item object based on item type
             Item item;
@@ -126,53 +127,144 @@ public class MongoDbPojo {
         }
         return items;
     }
-    private static Book createBookFromDocument(Item doc) {
+
+    public static boolean borrow(String itemName, String username) {
+        Document item = collection2.find(Filters.eq("title", itemName)).first();
+        if (item.getBoolean("available")) {
+            Document query = new Document("username", username);
+            Document member = collection.find(query).first();
+            List<Item> borrowList = member.getList("borrowedItems", Item.class);
+            String itemType = item.getString("itemType");
+            Item checkedout;
+            switch (itemType) {
+                case "book":
+                    checkedout = createBookFromDocument(item);
+                    break;
+                case "movie":
+                    checkedout = createMovieFromDocument(item);
+                    break;
+                case "audiobook":
+                    checkedout = createAudiobookFromDocument(item);
+                    break;
+                case "game":
+                    checkedout = createGameFromDocument(item);
+                    break;
+                default:
+                    // Handle unknown item types or throw an exception
+                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+            }
+            item.replace("available", true, false);
+            collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+            borrowList.add(checkedout);
+            member.replace("borrowedList", checkedout);
+            collection.findOneAndReplace(Filters.eq("username", username), member);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean returnItem(String itemName, String username) {
+        Document item = collection2.find(Filters.eq("title", itemName)).first();
+        if (!item.getBoolean("available")) {
+            Document query = new Document("username", username);
+            Document member = collection.find(query).first();
+            String itemType = item.getString("itemType");
+            Item checkedout;
+            switch (itemType) {
+                case "book":
+                    checkedout = createBookFromDocument(item);
+                    break;
+                case "movie":
+                    checkedout = createMovieFromDocument(item);
+                    break;
+                case "audiobook":
+                    checkedout = createAudiobookFromDocument(item);
+                    break;
+                case "game":
+                    checkedout = createGameFromDocument(item);
+                    break;
+                default:
+                    // Handle unknown item types or throw an exception
+                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+            }
+            item.replace("available", false, true);
+            collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+            //member.returnItem(checkedout);
+            collection.findOneAndReplace(Filters.eq("username", username), member);
+            return true;
+        }
+        return false;
+    }
+
+    public static List retrieveUserList(String user) {
+        Document query = new Document("username", user);
+        Document member = collection.find(query).first();
+        return member.getList("borrowedItems", Item.class);
+
+    }
+
+
+    private static Book createBookFromDocument(Document doc) {
         // Extract fields from document and create Book object
-        Book book = (Book) doc;
-        String itemType = book.getItemType();
-        String title = book.getTitle();
-        String author = book.getAuthor();
-        int pageCount = book.getPages();
-        String year = doc.getYear();
-        String imageUrl = doc.getImageURL();
+        Book book;
+        String itemType = doc.getString("itemType");
+        String title = doc.getString("title");
+        String author = doc.getString("author");
+        int pageCount = doc.getInteger("pages");
+        String year = doc.getString("year");
+        String imageUrl = doc.getString("imageURL");
+        boolean a = doc.getBoolean("available");
 
-        return new Book(itemType, title, author, pageCount, year, imageUrl);
+        book = new Book(itemType, title, author, pageCount, year, imageUrl);
+        book.setAvailable(a);
+        return book;
     }
 
-    private static Movie createMovieFromDocument(Item doc) {
+    private static Movie createMovieFromDocument(Document doc) {
         // Extract fields from document and create Movie object
-        Movie movie = (Movie) doc;
-        String itemType = movie.getItemType();
-        String title = movie.getTitle();
-        String length = movie.getLength();
-        String year = movie.getYear();
-        String imageUrl = movie.getImageURL();
+        Movie movie;
+        String itemType = doc.getString("itemType");
+        String title = doc.getString("title");
+        String length = doc.getString("length");
+        String year = doc.getString("year");
+        String imageUrl = doc.getString("imageURL");
+        boolean a = doc.getBoolean("available");
 
-        return new Movie(itemType, title, length, year, imageUrl);
+        movie = new Movie(itemType, title, length, year, imageUrl);
+        movie.setAvailable(a);
+        return movie;
     }
 
-    private static Audiobook createAudiobookFromDocument(Item doc) {
+    private static Audiobook createAudiobookFromDocument(Document doc) {
         // Extract fields from document and create Audiobook object
-        Audiobook Abook = (Audiobook) doc;
-        String itemType = Abook.getItemType();
-        String title = Abook.getTitle();
-        String author = Abook.getAuthor();
-        String length = Abook.getLength();
-        String year = Abook.getYear();
-        String imageUrl = Abook.getImageURL();
+        Audiobook abook;
 
-        return new Audiobook(itemType, title, author, length, year, imageUrl);
+        String itemType = doc.getString("itemType");
+        String title = doc.getString("title");
+        String author = doc.getString("author");
+        String length = doc.getString("length");
+        String year = doc.getString("year");
+        String imageUrl = doc.getString("imageURL");
+        boolean a = doc.getBoolean("available");
+
+        abook = new Audiobook(itemType, title, author, length, year, imageUrl);
+        abook.setAvailable(a);
+        return abook;
     }
 
-    private static Game createGameFromDocument(Item doc) {
-        // Extract fields from document and create Game object
-        Book book = (Book) doc;
-        String itemType = book.getItemType();
-        String title = book.getTitle();
-        String year = doc.getYear();
-        String imageUrl = doc.getImageURL();
 
-        return new Game(itemType, title, year, imageUrl);
+    private static Game createGameFromDocument(Document doc) {
+        // Extract fields from document and create Game object
+        Game game;
+        String itemType = doc.getString("itemType");
+        String title = doc.getString("title");
+        String year = doc.getString("year");
+        String imageUrl = doc.getString("imageURL");
+        boolean a = doc.getBoolean("available");
+
+        game = new Game(itemType, title, year, imageUrl);
+        game.setAvailable(a);
+        return game;
     }
 
 }

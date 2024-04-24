@@ -6,15 +6,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
 import java.util.List;
@@ -30,25 +28,61 @@ public class CatalogListener implements Initializable {
     @FXML
     private ListView itemListView;
 
+    @FXML
+    private Button checkout;
+
+    public Socket socket;
+
+    public ObjectOutputStream out;
+
+    public ObjectInputStream in;
+
+    private boolean init = false;
+
+    public PrintWriter writer;
+
+    public String username;
+
+    public Member member;
+
+    public void initializeSocket() throws IOException {
+        if (!init) {
+            socket = new Socket("localhost", 12346);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            writer = new PrintWriter(socket.getOutputStream());
+            init = true;
+        }
+    }
+
+    public void initializeUser(String user) throws IOException, ClassNotFoundException {
+        username = user;
+        member = new Member(username);
+        writer.println("init");
+        writer.println(username);
+        writer.flush();
+        member.borrowedItems = (List<Item>) in.readObject();
+
+    }
+
 
 
 
     public void initialize(URL url, ResourceBundle resource) {
+        try {
+            initializeSocket();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         String[] choices = {"Title", "Author"};
         search.getItems().addAll(choices);
         search.setStyle("-fx-font: 14px \"Droid Sans\";");
-        /*ObservableList<Item> items = FXCollections.observableArrayList(
-                new Item("Book", "Anxious People", "Fredrik Backman", "Description 1", "Images/anxious people.jpg"),
-                new Item("Book", "The Poppy War", "R. F. Kuang", "Description 2", "Images/the poppy war.jpg"),
-                new Item("DVD", "Wonder", "R.J. Palacio", "Description 3", "Images/Wonder_Cover_Art.png")
-        );*/
-        try (ObjectOutputStream out = new ObjectOutputStream(ClientListener.socket.getOutputStream());
-             ObjectInputStream in = new ObjectInputStream(ClientListener.socket.getInputStream())) {
 
-            // Send request to server
-            out.writeObject("getItems");
+        try  {
+            writer.println("getItems");
+            writer.flush();
 
-            // Receive items from server
+
             List<Item> items = (List<Item>) in.readObject();
             ObservableList<Item> observableList = FXCollections.observableArrayList(items);
             itemListView.setItems(observableList);
@@ -58,6 +92,106 @@ public class CatalogListener implements Initializable {
             e.printStackTrace();
         }
 
+        itemListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Handle the selection change
+                Item selected = (Item) newValue;
+                writer.println("updates");
+                writer.flush();
+                boolean updated;
+                try {
+                    updated = (boolean) in.readObject();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                if (updated) {
+                    List<Item> items = null;
+                    try {
+                        items = (List<Item>) in.readObject();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                    itemListView.setItems(observableList);
+                    itemListView.setCellFactory(itemListView -> new ItemListCell());
+                }
+                if (selected.isAvailable()) {
+                    checkout.setText("Check Out Item");
+                } else if (!selected.isAvailable()) {
+                    if (member.hasItem(selected)) {
+                        checkout.setText("Return Item");
+                    }
+                    else {
+                        checkout.setText("Put Item on Hold");
+                    }
+                }
+            }
+        });
+
+    }
+
+    public void checkOut() throws IOException, ClassNotFoundException {
+        initializeSocket();
+        if (checkout.getText().equals("Check Out Item")) {
+            Item selectedItem = (Item) itemListView.getSelectionModel().getSelectedItem();
+            selectedItem.setAvailable(false);
+            writer.println("checkout");
+            writer.println(selectedItem.getTitle());
+            writer.println(username);
+            writer.flush();
+
+            String response = (String) in.readObject();
+            if (response.equals("success")) {
+                showAlert("Checkout successful!");
+                member.borrowItem(selectedItem);
+                checkout.setText("Return Item");
+                List<Item> items = (List<Item>) in.readObject();
+                ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                itemListView.setItems(observableList);
+                itemListView.setCellFactory(itemListView -> new ItemListCell());
+
+                // Update UI or perform other actions
+            } else {
+                showAlert("Checkout failed. Item may be unavailable or already checked out.");
+            }
+        }
+        else if (checkout.getText().equals("Return Item")) {
+            Item selectedItem = (Item) itemListView.getSelectionModel().getSelectedItem();
+            writer.println("return");
+            writer.println(selectedItem.getTitle());
+            writer.println(username);
+            writer.flush();
+            String response = (String) in.readObject();
+            if (response.equals("success")) {
+                showAlert("Return successful!");
+                member.returnItem(selectedItem);
+                checkout.setText("Check Out Item");
+                List<Item> items = (List<Item>) in.readObject();
+                ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                itemListView.setItems(observableList);
+                itemListView.setCellFactory(itemListView -> new ItemListCell());
+
+                // Update UI or perform other actions
+            } else {
+                showAlert("Return failed.");
+            }
+
+        }
+        else if (checkout.getText().equals("Put Item on Hold")) {
+
+        }
+
+
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }

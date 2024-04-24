@@ -3,9 +3,11 @@ import java.io.*;
 import java.util.*;
 
 public class ServerSide {
-    private static final int PORT = 12345;
+    private static final int PORT = 12346;
     private static List<Member> members;
     private static List<Item> catalog;
+
+    public static boolean updates = false;
 
     public static void main(String[] args) {
         members = new ArrayList<>();
@@ -33,6 +35,8 @@ public class ServerSide {
         private ObjectOutputStream out;
         private ObjectInputStream in;
 
+        private BufferedReader reader;
+
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
@@ -41,33 +45,89 @@ public class ServerSide {
         public void run() {
             try {
                 out = new ObjectOutputStream(clientSocket.getOutputStream());
-                in = new ObjectInputStream(clientSocket.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                // Read username from the client
-                String username = (String) in.readObject();
-                String password = (String) in.readObject();
-
-                // Authenticate the username
-                boolean isAuthenticated = MongoDbPojo.authenticate(username, password);
-
-                // Send authentication result back to the client
-                if (isAuthenticated) {
-                    out.writeObject("success");
-                } else {
-                    out.writeObject("failure");
-                }
-                out.flush();
-
-                while (true) {
-                    String request = (String)in.readObject();
-                    if (request instanceof String && request.equals("getItems")) {
+                while(true) {
+                    String request = reader.readLine();
+                    if (request != null && request.contains("getItems")) {
                         List<Item> items = MongoDbPojo.retrieveItems(); // Implement this method to fetch items from MongoDB
-                        out.writeObject(items); // Send items to client
+                        out.writeObject(items);
+                        out.flush();// Send items to client
                     }
-                    // Add more handlers for other types of requests as needed
+                    else if (request != null && request.contains("checkout")) {
+                        String checked = reader.readLine();
+                        String user1 = reader.readLine();
+                        boolean valid = MongoDbPojo.borrow(checked, user1);
+                        if (valid) {
+                            out.writeObject("success");
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                            out.flush();
+                            updates = true;
+                        }
+                        else {
+                            out.writeObject("failure");
+                            out.flush();
+                        }
+
+                    }
+                    else if (request != null && request.contains("return")) {
+                        String checked = reader.readLine();
+                        String user1 = reader.readLine();
+                        boolean valid = MongoDbPojo.returnItem(checked, user1);
+                        if (valid) {
+                            out.writeObject("success");
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                            out.flush();
+                            updates = true;
+                        }
+                        else {
+                            out.writeObject("failure");
+                            out.flush();
+                        }
+                    }
+                    else if (request.contains("updates")) {
+                        out.writeObject(updates);
+                        if (updates) {
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                        }
+                        out.flush();
+                        updates = false;
+                    }
+                    else if (request.contains("init")) {
+                        String user = reader.readLine();
+                        List<Item> items = MongoDbPojo.retrieveUserList(user);
+                        out.writeObject(items);
+                        out.flush();
+
+                    }
+                    else {
+                        // Read username from the client
+                        String username = reader.readLine();
+                        String password = reader.readLine();
+
+                        // Authenticate the username
+                        boolean isAuthenticated = MongoDbPojo.authenticate(username, password);
+
+                        // Send authentication result back to the client
+                        if (isAuthenticated) {
+                            out.writeObject("success");
+
+                        } else {
+                            out.writeObject("failure");
+                        }
+                        out.flush();
+                    }
                 }
 
-            } catch (IOException | ClassNotFoundException e) {
+
+
+                    // Add more handlers for other types of requests as needed
+
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

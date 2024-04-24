@@ -64,6 +64,10 @@
                         <Font name="Droid Sans" size="23.0" />
                      </font>
                   </Label>
+                  <Button fx:id="checkout" layoutX="452.0" layoutY="6.0" mnemonicParsing="false" onAction="#checkOut" text="Check Out Item">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
                </children></AnchorPane>
         </items>
       </SplitPane>

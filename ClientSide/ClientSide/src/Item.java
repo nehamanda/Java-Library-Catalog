@@ -1,4 +1,6 @@
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
     public String title;
     public String itemType;
     public boolean available = true;
