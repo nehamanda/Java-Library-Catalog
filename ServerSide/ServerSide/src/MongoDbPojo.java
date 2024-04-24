@@ -130,71 +130,76 @@ public class MongoDbPojo {
 
     public static boolean borrow(String itemName, String username) {
         Document item = collection2.find(Filters.eq("title", itemName)).first();
-        if (item.getBoolean("available")) {
-            Document query = new Document("username", username);
-            Document member = collection.find(query).first();
-            List<Item> borrowList = (List) member.get("borrowedItems");
-            String itemType = item.getString("itemType");
-            Item checkedout;
-            switch (itemType) {
-                case "book":
-                    checkedout = createBookFromDocument(item);
-                    break;
-                case "movie":
-                    checkedout = createMovieFromDocument(item);
-                    break;
-                case "audiobook":
-                    checkedout = createAudiobookFromDocument(item);
-                    break;
-                case "game":
-                    checkedout = createGameFromDocument(item);
-                    break;
-                default:
-                    // Handle unknown item types or throw an exception
-                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+        synchronized (collection2) {
+            if (item.getBoolean("available")) {
+                Document query = new Document("username", username);
+                Document member = collection.find(query).first();
+                List<Item> borrowList = (List) member.get("borrowedItems");
+                String itemType = item.getString("itemType");
+                Item checkedout;
+                switch (itemType) {
+                    case "book":
+                        checkedout = createBookFromDocument(item);
+                        break;
+                    case "movie":
+                        checkedout = createMovieFromDocument(item);
+                        break;
+                    case "audiobook":
+                        checkedout = createAudiobookFromDocument(item);
+                        break;
+                    case "game":
+                        checkedout = createGameFromDocument(item);
+                        break;
+                    default:
+                        // Handle unknown item types or throw an exception
+                        throw new IllegalArgumentException("Unknown item type: " + itemType);
+                }
+                item.replace("available", true, false);
+                collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+                checkedout.setAvailable(false);
+                borrowList.add(checkedout);
+                member.replace("borrowedItems", borrowList);
+                collection.findOneAndReplace(Filters.eq("username", username), member);
+                return true;
             }
-            item.replace("available", true, false);
-            collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-            checkedout.setAvailable(false);
-            borrowList.add(checkedout);
-            member.replace("borrowedItems", borrowList);
-            collection.findOneAndReplace(Filters.eq("username", username), member);
-            return true;
         }
+
         return false;
     }
 
     public static boolean returnItem(String itemName, String username) {
         Document item = collection2.find(Filters.eq("title", itemName)).first();
-        if (!item.getBoolean("available")) {
-            Document query = new Document("username", username);
-            Document member = collection.find(query).first();
-            List<Item> borrowList = (List) member.get("borrowedItems");
-            String itemType = item.getString("itemType");
-            Item checkedout;
-            switch (itemType) {
-                case "book":
-                    checkedout = createBookFromDocument(item);
-                    break;
-                case "movie":
-                    checkedout = createMovieFromDocument(item);
-                    break;
-                case "audiobook":
-                    checkedout = createAudiobookFromDocument(item);
-                    break;
-                case "game":
-                    checkedout = createGameFromDocument(item);
-                    break;
-                default:
-                    // Handle unknown item types or throw an exception
-                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+        synchronized (collection2) {
+            if (!item.getBoolean("available")) {
+                Document query = new Document("username", username);
+                Document member = collection.find(query).first();
+                List<Item> borrowList = (List) member.get("borrowedItems");
+                String itemType = item.getString("itemType");
+                Item checkedout;
+                switch (itemType) {
+                    case "book":
+                        checkedout = createBookFromDocument(item);
+                        break;
+                    case "movie":
+                        checkedout = createMovieFromDocument(item);
+                        break;
+                    case "audiobook":
+                        checkedout = createAudiobookFromDocument(item);
+                        break;
+                    case "game":
+                        checkedout = createGameFromDocument(item);
+                        break;
+                    default:
+                        // Handle unknown item types or throw an exception
+                        throw new IllegalArgumentException("Unknown item type: " + itemType);
+                }
+                item.replace("available", false, true);
+                collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+                borrowList.remove(checkedout);
+                member.replace("borrowedItems", borrowList);
+                collection.findOneAndReplace(Filters.eq("username", username), member);
+                return true;
             }
-            item.replace("available", false, true);
-            collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-            borrowList.remove(checkedout);
-            member.replace("borrowedItems", borrowList);
-            collection.findOneAndReplace(Filters.eq("username", username), member);
-            return true;
         }
         return false;
     }

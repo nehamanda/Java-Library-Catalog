@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,7 +75,9 @@ public class ClientListener {
 
                 // Check if login was successful
                 if (response.equals("success")) {
-                    showAlert("Login successful!");
+                    new Thread(() -> {
+                        showAlert("Login successful!");
+                    });
                     switchToCatalog(event);
 
                     // Proceed to next screen or perform other actions
@@ -93,9 +96,12 @@ public class ClientListener {
     }
 
     private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText(message);
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+
     }
 
     public void switchToCatalog(ActionEvent event) throws IOException, ClassNotFoundException {

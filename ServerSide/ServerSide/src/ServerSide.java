@@ -49,7 +49,10 @@ public class ServerSide {
 
                 while(true) {
                     String request = reader.readLine();
-                    if (request != null && request.contains("getItems")) {
+                    if (request == null) {
+
+                    }
+                    else if (request != null && request.contains("getItems")) {
                         List<Item> items = MongoDbPojo.retrieveItems(); // Implement this method to fetch items from MongoDB
                         out.writeObject(items);
                         out.flush();// Send items to client
@@ -87,7 +90,7 @@ public class ServerSide {
                             out.flush();
                         }
                     }
-                    else if (request.contains("updates")) {
+                    else if (request != null && request.contains("updates")) {
                         out.writeObject(updates);
                         if (updates) {
                             List<Item> items = MongoDbPojo.retrieveItems();// issue here
@@ -96,14 +99,13 @@ public class ServerSide {
                         out.flush();
                         updates = false;
                     }
-                    else if (request.contains("init")) {
+                    else if (request != null && request.contains("init")) {
                         String user = reader.readLine();
                         List<Item> items = MongoDbPojo.retrieveUserList(user);// issue here
                         out.writeObject(items);
                         out.flush();
-
                     }
-                    else {
+                    else if (request != null){
                         // Read username from the client
                         String username = reader.readLine();
                         String password = reader.readLine();
