@@ -1,6 +1,9 @@
+
+
 public class Book extends Item {
     private int pages;
     public String author;
+    //private List<Copy> copies;
 
     Book() {}
 
@@ -13,6 +16,10 @@ public class Book extends Item {
         this.pages = pages;
         this.year = year;
         this.imageURL = imageURL;
+//        this.copies = new ArrayList<Copy>();
+//        for (int i = 0; i < copyNum; i++) {
+//            copies.add(new Copy(i));
+//        }
     }
 
      public String getAuthor() {
@@ -22,4 +29,8 @@ public class Book extends Item {
      public int getPages() {
          return pages;
      }
+
+//    public List<Copy> getCopies() {
+//        return copies;
+//    }
 }

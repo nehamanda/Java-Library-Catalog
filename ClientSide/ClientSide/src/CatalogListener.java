@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -32,11 +33,17 @@ public class CatalogListener implements Initializable {
     @FXML
     private Button checkout;
 
+    @FXML
+    private Label logout;
+
     public Socket socket;
 
     public ObjectOutputStream out;
 
     public ObjectInputStream in;
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
 
     private boolean init = false;
 
@@ -134,6 +141,25 @@ public class CatalogListener implements Initializable {
                 }
             }
         });
+
+    }
+
+    public void logoutClicked() throws IOException {
+        socket.close();
+        Parent root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
+        Stage stage = (Stage) logout.getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    public void switchToLogin(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
 
     }
 

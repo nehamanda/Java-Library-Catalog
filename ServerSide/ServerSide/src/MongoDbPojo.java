@@ -254,6 +254,7 @@ public class MongoDbPojo {
         boolean a = doc.getBoolean("available");
 
         book = new Book(itemType, title, author, pageCount, year, imageUrl);
+
         book.setAvailable(a);
         return book;
     }

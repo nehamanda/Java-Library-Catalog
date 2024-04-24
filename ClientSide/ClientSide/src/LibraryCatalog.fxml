@@ -93,7 +93,7 @@
             <DropShadow />
          </effect>
       </Label>
-      <Label layoutX="925.0" layoutY="17.0" text="Log out" textFill="WHITE">
+      <Label fx:id="logout" layoutX="925.0" layoutY="17.0" onMouseClicked="#logoutClicked" text="Log out" textFill="WHITE">
          <font>
             <Font name="Droid Sans Bold" size="16.0" />
          </font>

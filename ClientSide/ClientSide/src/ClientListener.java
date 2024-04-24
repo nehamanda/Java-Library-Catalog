@@ -78,6 +78,7 @@ public class ClientListener {
                     new Thread(() -> {
                         showAlert("Login successful!");
                     });
+                    socket.close();
                     switchToCatalog(event);
 
                     // Proceed to next screen or perform other actions
