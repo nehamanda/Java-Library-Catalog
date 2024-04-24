@@ -58,10 +58,10 @@ public class CatalogListener implements Initializable {
     public void initializeUser(String user) throws IOException, ClassNotFoundException {
         username = user;
         member = new Member(username);
-        writer.println("init");
+        /*writer.println("init");
         writer.println(username);
         writer.flush();
-        member.borrowedItems = (List<Item>) in.readObject();
+        member.borrowedItems = (List<Item>) in.readObject();*/
 
     }
 
@@ -96,29 +96,29 @@ public class CatalogListener implements Initializable {
             if (newValue != null) {
                 // Handle the selection change
                 Item selected = (Item) newValue;
-                writer.println("updates");
-                writer.flush();
-                boolean updated;
-                try {
-                    updated = (boolean) in.readObject();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                if (updated) {
-                    List<Item> items = null;
-                    try {
-                        items = (List<Item>) in.readObject();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    ObservableList<Item> observableList = FXCollections.observableArrayList(items);
-                    itemListView.setItems(observableList);
-                    itemListView.setCellFactory(itemListView -> new ItemListCell());
-                }
+//                writer.println("updates");
+//                writer.flush();
+//                boolean updated;
+//                try {
+//                    updated = (boolean) in.readObject();
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                if (updated) {
+//                    List<Item> items = null;
+//                    try {
+//                        items = (List<Item>) in.readObject();
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    } catch (ClassNotFoundException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+//                    itemListView.setItems(observableList);
+//                    itemListView.setCellFactory(itemListView -> new ItemListCell());
+//                }
                 if (selected.isAvailable()) {
                     checkout.setText("Check Out Item");
                 } else if (!selected.isAvailable()) {

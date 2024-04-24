@@ -133,7 +133,7 @@ public class MongoDbPojo {
         if (item.getBoolean("available")) {
             Document query = new Document("username", username);
             Document member = collection.find(query).first();
-            List<Item> borrowList = member.getList("borrowedItems", Item.class);
+            List<Item> borrowList = (List) member.get("borrowedItems");
             String itemType = item.getString("itemType");
             Item checkedout;
             switch (itemType) {
@@ -156,7 +156,7 @@ public class MongoDbPojo {
             item.replace("available", true, false);
             collection2.findOneAndReplace(Filters.eq("title", itemName), item);
             borrowList.add(checkedout);
-            member.replace("borrowedList", checkedout);
+            member.replace("borrowedItems", borrowList);
             collection.findOneAndReplace(Filters.eq("username", username), member);
             return true;
         }
@@ -199,7 +199,7 @@ public class MongoDbPojo {
     public static List retrieveUserList(String user) {
         Document query = new Document("username", user);
         Document member = collection.find(query).first();
-        return member.getList("borrowedItems", Item.class);
+        return member.getList("borrowedItems", List.class);
 
     }
 

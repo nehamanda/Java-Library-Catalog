@@ -90,7 +90,7 @@ public class ServerSide {
                     else if (request.contains("updates")) {
                         out.writeObject(updates);
                         if (updates) {
-                            List<Item> items = MongoDbPojo.retrieveItems();
+                            List<Item> items = MongoDbPojo.retrieveItems();// issue here
                             out.writeObject(items);
                         }
                         out.flush();
@@ -98,7 +98,7 @@ public class ServerSide {
                     }
                     else if (request.contains("init")) {
                         String user = reader.readLine();
-                        List<Item> items = MongoDbPojo.retrieveUserList(user);
+                        List<Item> items = MongoDbPojo.retrieveUserList(user);// issue here
                         out.writeObject(items);
                         out.flush();
 
