@@ -36,6 +36,27 @@ public class CatalogListener implements Initializable {
     @FXML
     private Label logout;
 
+    @FXML
+    private CheckBox bookchk;
+
+    @FXML
+    private CheckBox abookchk;
+
+    @FXML
+    private CheckBox gamechk;
+
+    @FXML
+    private CheckBox moviechk;
+
+    @FXML
+    private CheckBox availablechk;
+
+    @FXML
+    private CheckBox hasitemchk;
+
+    @FXML
+    private CheckBox holdchk;
+
     public Socket socket;
 
     public ObjectOutputStream out;
@@ -154,12 +175,45 @@ public class CatalogListener implements Initializable {
 
     }
 
-    public void switchToLogin(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+    public void filterItems() throws IOException, ClassNotFoundException {
+        writer.println("getItems");
+        writer.flush();
+        List<Item> items = (List<Item>) in.readObject();
+        ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+        ObservableList<Item> filteredItems = FXCollections.observableArrayList();
+
+
+        for (Item item : catalogItems) {
+            if ((bookchk.isSelected() && item instanceof Book) ||
+                    (abookchk.isSelected() && item instanceof Audiobook) ||
+                    (gamechk.isSelected() && item instanceof Game) ||
+                    (moviechk.isSelected() && item instanceof Movie)) {
+                if ((availablechk.isSelected() && !item.isAvailable()) ||
+                        (hasitemchk.isSelected() && !member.hasItem(item))) // ADD HOLD BOX CHECK HERE
+                    {
+
+                }
+                filteredItems.add(item);
+            }
+            else if (!abookchk.isSelected() && !bookchk.isSelected()
+                    && !gamechk.isSelected() && !moviechk.isSelected() &&
+                    ((availablechk.isSelected() && item.isAvailable()) ||
+                    (hasitemchk.isSelected() && member.hasItem(item)))) {
+                filteredItems.add(item);
+            }
+        }
+
+        itemListView.setItems(filteredItems);
+        itemListView.setCellFactory(itemListView -> new ItemListCell());
+    }
+
+    public void resetFilters() throws IOException, ClassNotFoundException {
+        writer.println("getItems");
+        writer.flush();
+        List<Item> items = (List<Item>) in.readObject();
+        ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+        itemListView.setItems(catalogItems);
+        itemListView.setCellFactory(itemListView -> new ItemListCell());
 
     }
 

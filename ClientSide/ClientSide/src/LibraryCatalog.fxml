@@ -28,8 +28,8 @@
                         <Font name="Droid Sans" size="14.0" />
                      </font></TextField>
                   <Button layoutX="316.0" layoutY="47.0" mnemonicParsing="false" text="OK" />
-                  <CheckBox layoutX="22.0" layoutY="153.0" mnemonicParsing="false" text="Books" />
-                  <CheckBox layoutX="22.0" layoutY="183.0" mnemonicParsing="false" text="Audiobooks" />
+                  <CheckBox fx:id="bookchk" layoutX="22.0" layoutY="153.0" mnemonicParsing="false" text="Books" />
+                  <CheckBox fx:id="abookchk" layoutX="22.0" layoutY="183.0" mnemonicParsing="false" text="Audiobooks" />
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8f646d" height="30.0" layoutX="-3.0" layoutY="85.0" stroke="TRANSPARENT" strokeType="INSIDE" width="370.0" />
                   <Label layoutX="14.0" layoutY="86.0" text="Filter By:" textFill="WHITE">
                      <font>
@@ -40,20 +40,25 @@
                      <font>
                         <Font name="System Italic" size="14.0" />
                      </font></Label>
-                  <CheckBox layoutX="22.0" layoutY="213.0" mnemonicParsing="false" text="Games" />
-                  <CheckBox layoutX="22.0" layoutY="243.0" mnemonicParsing="false" text="Movies" />
+                  <CheckBox fx:id="gamechk" layoutX="22.0" layoutY="213.0" mnemonicParsing="false" text="Games" />
+                  <CheckBox fx:id="moviechk" layoutX="22.0" layoutY="243.0" mnemonicParsing="false" text="Movies" />
                   <Label layoutX="14.0" layoutY="294.0" text="Availability:">
                      <font>
                         <Font name="System Italic" size="14.0" />
                      </font>
                   </Label>
-                  <CheckBox layoutX="22.0" layoutY="325.0" mnemonicParsing="false" text="Available" />
-                  <CheckBox layoutX="22.0" layoutY="355.0" mnemonicParsing="false" text="Checked out by me" />
-                  <CheckBox layoutX="22.0" layoutY="385.0" mnemonicParsing="false" text="My holds" />
-                  <Button layoutX="156.0" layoutY="438.0" mnemonicParsing="false" text="Filter">
+                  <CheckBox fx:id="availablechk" layoutX="22.0" layoutY="325.0" mnemonicParsing="false" text="Available" />
+                  <CheckBox fx:id="hasitemchk" layoutX="22.0" layoutY="355.0" mnemonicParsing="false" text="Checked out by me" />
+                  <CheckBox fx:id="holdchk" layoutX="22.0" layoutY="385.0" mnemonicParsing="false" text="My holds" />
+                  <Button fx:id="filter" layoutX="86.0" layoutY="438.0" mnemonicParsing="false" onAction="#filterItems" text="Filter">
                      <font>
                         <Font size="14.0" />
                      </font></Button>
+                  <Button fx:id="resetFilters" layoutX="192.0" layoutY="440.0" mnemonicParsing="false" onAction="#resetFilters" text="Reset">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>

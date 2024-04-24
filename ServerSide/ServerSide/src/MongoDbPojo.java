@@ -195,7 +195,7 @@ public class MongoDbPojo {
                 }
                 item.replace("available", false, true);
                 collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-                borrowList.remove(checkedout);
+                borrowList.remove(checkedout); //issue here
                 member.replace("borrowedItems", borrowList);
                 collection.findOneAndReplace(Filters.eq("username", username), member);
                 return true;
