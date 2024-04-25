@@ -107,7 +107,30 @@ public class ServerSide {
                         out.writeObject(profilePic);
                         out.flush();
                     }
+                    else if (request != null && request.contains("newpassword")) {
+                        String username = reader.readLine();
+                        String password = reader.readLine();
+                        Boolean changepw = MongoDbPojo.changepw(username, password);
+                        if (changepw) {
+                            out.writeObject("success");
 
+                        } else {
+                            out.writeObject("failure");
+                        }
+                        out.flush();
+                    }
+                    else if (request != null && request.contains("newpfp")) {
+                        String username = reader.readLine();
+                        String newpfp = reader.readLine();
+                        Boolean newpic = MongoDbPojo.newpfp(username, newpfp);
+                        if (newpic) {
+                            out.writeObject("success");
+
+                        } else {
+                            out.writeObject("failure");
+                        }
+                        out.flush();
+                    }
                     else if (request != null){
                         // Read username from the client
                         String username = reader.readLine();

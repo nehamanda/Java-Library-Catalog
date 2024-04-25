@@ -73,6 +73,32 @@ public class CatalogListener implements Initializable {
     @FXML
     private ImageView pfp;
 
+    @FXML
+    private Label accounttxt;
+
+    @FXML
+    private Label resetpassword;
+
+    @FXML
+    private Label changepfp;
+
+    @FXML
+    private TextField enternewpassword;
+
+    @FXML
+    private TextField enterimageaddress;
+
+    @FXML
+    private Button submitnewpassword;
+
+    @FXML
+    private Button submitpfp;
+
+    @FXML
+    private Label librarycatalog;
+
+
+
     public Socket socket;
 
     public ObjectOutputStream out;
@@ -183,6 +209,44 @@ public class CatalogListener implements Initializable {
 
     }
 
+    public void resetPassword() throws IOException, ClassNotFoundException {
+        String newpw = enternewpassword.getText();
+        writer.println("newpassword");
+        writer.println(username);
+        writer.println(newpw);
+        writer.flush();
+        String response = (String) in.readObject();
+        if (response.equals("success")) {
+            showAlert("Password changed!");
+        }
+        else {
+            showAlert("Password change failed.");
+        }
+
+    }
+
+    public void resetPfp() throws IOException, ClassNotFoundException {
+        String newpfp = enterimageaddress.getText();
+        Image image = new Image(newpfp);
+        if (image.getRequestedHeight() == 0.0) {
+            showAlert("Profile picture change failed. Choose another image.");
+        }
+        else {
+            writer.println("newpfp");
+            writer.println(username);
+            writer.println(newpfp);
+            writer.flush();
+            String response = (String) in.readObject();
+            if (response.equals("success")) {
+                showAlert("Profile picture changed!");
+                pfp.setImage(image);
+            }
+            else {
+                showAlert("Profile picture change failed.");
+            }
+        }
+    }
+
     public void logoutClicked() throws IOException {
         socket.close();
         Parent root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
@@ -193,16 +257,65 @@ public class CatalogListener implements Initializable {
 
     }
 
-    public void myAccountClicked() {
+    public void myAccountClicked() throws IOException, ClassNotFoundException {
         if (myaccount.getText().equals("My Account")) {
             account.setDisable(false);
             account.setVisible(true);
-            myaccount.setText("Back");
+            myaccount.setText("← Go back");
+            librarycatalog.setText("My Borrowed Items");
+            checkout.setVisible(false);
+            checkout.setDisable(true);
+            accounttxt.setVisible(true);
+            resetpassword.setVisible(true);
+            changepfp.setVisible(true);
+            enternewpassword.setVisible(true);
+            enternewpassword.setDisable(false);
+            enterimageaddress.setVisible(true);
+            enterimageaddress.setDisable(false);
+            submitnewpassword.setVisible(true);
+            submitnewpassword.setDisable(false);
+            submitpfp.setVisible(true);
+            submitpfp.setDisable(false);
+
+            writer.println("getItems");
+            writer.flush();
+            List<Item> items = (List<Item>) in.readObject();
+            ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+            ObservableList<Item> filteredItems = FXCollections.observableArrayList();
+
+            for (Item item : catalogItems) {
+                if (member.hasItem(item)) {
+                    filteredItems.add(item);
+                }
+            }
+            itemListView.setItems(filteredItems);
+            itemListView.setCellFactory(itemListView -> new ItemListCell());
         }
         else {
             account.setDisable(true);
             account.setVisible(false);
             myaccount.setText("My Account");
+            librarycatalog.setText("Library Catalog");
+            checkout.setVisible(true);
+            checkout.setDisable(false);
+            accounttxt.setVisible(false);
+            resetpassword.setVisible(false);
+            changepfp.setVisible(false);
+            enternewpassword.setVisible(false);
+            enternewpassword.setDisable(true);
+            enterimageaddress.setVisible(false);
+            enterimageaddress.setDisable(true);
+            submitnewpassword.setVisible(false);
+            submitnewpassword.setDisable(true);
+            submitpfp.setVisible(false);
+            submitpfp.setDisable(true);
+
+            writer.println("getItems");
+            writer.flush();
+            List<Item> items = (List<Item>) in.readObject();
+            ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+            itemListView.setItems(catalogItems);
+            itemListView.setCellFactory(itemListView -> new ItemListCell());
         }
 
     }

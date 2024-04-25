@@ -107,6 +107,27 @@ public class MongoDbPojo {
         return pw.equals(find.getString("password"));
     }
 
+    public static boolean changepw(String username, String password) {
+        Document find = collection.find(Filters.eq("username", username)).first();
+        if (find == null) {
+            return false;
+        }
+        String hash = find.getString("hash");
+        String pw = BCrypt.hashpw(password, hash);
+        find.replace("password", pw);
+        collection.findOneAndReplace(Filters.eq("username", username), find);
+        return true;
+    }
+    public static boolean newpfp(String username, String newpfp) {
+        Document find = collection.find(Filters.eq("username", username)).first();
+        if (find == null) {
+            return false;
+        }
+        find.replace("profilePic", newpfp);
+        collection.findOneAndReplace(Filters.eq("username", username), find);
+        return true;
+    }
+
     public static List retrieveItems() {
         List<Item> items = new ArrayList<>();
         for (Document doc : collection2.find()) {
