@@ -18,7 +18,7 @@ public class ItemListCell extends ListCell<Item> {
                 int pages = book.getPages();
                 String year = book.getYear();
                 boolean a = book.isAvailable();
-                String availability = a ? "1 of 1 Available" : "0 of 1 Available";
+                String availability = book.getCopies() + " of " + book.getTotal() + " Available";
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
@@ -38,7 +38,7 @@ public class ItemListCell extends ListCell<Item> {
                 String itemType = game.getItemType();
                 String year = game.getYear();
                 boolean a = game.isAvailable();
-                String availability = a ? "1 of 1 Available" : "0 of 1 Available";
+                String availability = game.getCopies() + " of " + game.getTotal() + " Available";
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
@@ -58,7 +58,7 @@ public class ItemListCell extends ListCell<Item> {
                 String length = movie.getLength();
                 String year = movie.getYear();
                 boolean a = movie.isAvailable();
-                String availability = a ? "1 of 1 Available" : "0 of 1 Available";
+                String availability = movie.getCopies() + " of " + movie.getTotal() + " Available";
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
@@ -79,7 +79,7 @@ public class ItemListCell extends ListCell<Item> {
                 String length = Abook.getLength();
                 String year = Abook.getYear();
                 boolean a = Abook.isAvailable();
-                String availability = a ? "1 of 1 Available" : "0 of 1 Available";
+                String availability = Abook.getCopies() + " of " + Abook.getTotal() + " Available";
 
 
                 // Customize the formatting as needed

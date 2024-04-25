@@ -194,16 +194,16 @@ public class CatalogListener implements Initializable {
 //                    itemListView.setItems(observableList);
 //                    itemListView.setCellFactory(itemListView -> new ItemListCell());
 //                }
-                if (selected.isAvailable()) {
-                    checkout.setText("Check Out Item");
-                } else if (!selected.isAvailable()) {
-                    if (member.hasItem(selected)) {
-                        checkout.setText("Return Item");
-                    }
-                    else {
-                        checkout.setText("Put Item on Hold");
-                    }
+                if (member.hasItem(selected)) {
+                    checkout.setText("Return Item");
                 }
+                else if (selected.isAvailable()) {
+                    checkout.setText("Check Out Item");
+                }
+                else {
+                    checkout.setText("Put Item on Hold");
+                }
+
             }
         });
 
@@ -336,9 +336,19 @@ public class CatalogListener implements Initializable {
                 if ((availablechk.isSelected() && !item.isAvailable()) ||
                         (hasitemchk.isSelected() && !member.hasItem(item))) // ADD HOLD BOX CHECK HERE
                     {
-
+                        if ((availablechk.isSelected() && !item.isAvailable()) &&
+                                (hasitemchk.isSelected() && member.hasItem(item))) {
+                            filteredItems.add(item);
+                        }
+                        else if ((availablechk.isSelected() && item.isAvailable()) &&
+                                (hasitemchk.isSelected() && !member.hasItem(item))) {
+                            filteredItems.add(item);
+                        }
                 }
-                filteredItems.add(item);
+                else {
+                    filteredItems.add(item);
+                }
+
             }
             else if (!abookchk.isSelected() && !bookchk.isSelected()
                     && !gamechk.isSelected() && !moviechk.isSelected() &&
@@ -399,7 +409,6 @@ public class CatalogListener implements Initializable {
         initializeSocket();
         if (checkout.getText().equals("Check Out Item")) {
             Item selectedItem = (Item) itemListView.getSelectionModel().getSelectedItem();
-            selectedItem.setAvailable(false);
             writer.println("checkout");
             writer.println(selectedItem.getTitle());
             writer.println(username);

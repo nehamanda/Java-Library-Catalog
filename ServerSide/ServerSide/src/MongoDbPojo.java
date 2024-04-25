@@ -187,9 +187,15 @@ public class MongoDbPojo {
                         // Handle unknown item types or throw an exception
                         throw new IllegalArgumentException("Unknown item type: " + itemType);
                 }
-                item.replace("available", true, false);
+                item.replace("copies", item.getInteger("copies")-1);
+                if (item.getInteger("copies") <= 0) {
+                    item.replace("available", true, false);
+                }
                 collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-                checkedout.setAvailable(false);
+                checkedout.setCopies(checkedout.getCopies() - 1);
+                if (checkedout.getCopies() <= 0) {
+                    checkedout.setAvailable(false);
+                }
                 borrowList.add(checkedout);
                 member.replace("borrowedItems", borrowList);
                 collection.findOneAndReplace(Filters.eq("username", username), member);
@@ -203,7 +209,7 @@ public class MongoDbPojo {
     public static boolean returnItem(String itemName, String username) {
         Document item = collection2.find(Filters.eq("title", itemName)).first();
         synchronized (collection2) {
-            if (!item.getBoolean("available")) {
+            if (item.getInteger("copies") < item.getInteger("total")) {
                 Document query = new Document("username", username);
                 Document member = collection.find(query).first();
                 List<Item> borrowListItem = retrieveUserList(username);
@@ -226,7 +232,8 @@ public class MongoDbPojo {
                         // Handle unknown item types or throw an exception
                         throw new IllegalArgumentException("Unknown item type: " + itemType);
                 }
-                item.replace("available", false, true);
+                item.replace("copies", item.getInteger("copies")+1);
+                item.replace("available", true);
                 collection2.findOneAndReplace(Filters.eq("title", itemName), item);
                 borrowListItem.remove(checkedout); //issue here
                 member.replace("borrowedItems", borrowListItem);
@@ -291,10 +298,14 @@ public class MongoDbPojo {
         String year = doc.getString("year");
         String imageUrl = doc.getString("imageURL");
         boolean a = doc.getBoolean("available");
+        int copies = doc.getInteger("copies");
+        int total = doc.getInteger("total");
 
         book = new Book(itemType, title, author, pageCount, year, imageUrl);
 
         book.setAvailable(a);
+        book.setTotal(total);
+        book.setCopies(copies);
         return book;
     }
 
@@ -307,9 +318,13 @@ public class MongoDbPojo {
         String year = doc.getString("year");
         String imageUrl = doc.getString("imageURL");
         boolean a = doc.getBoolean("available");
+        int copies = doc.getInteger("copies");
+        int total = doc.getInteger("total");
 
         movie = new Movie(itemType, title, length, year, imageUrl);
         movie.setAvailable(a);
+        movie.setTotal(total);
+        movie.setCopies(copies);
         return movie;
     }
 
@@ -324,9 +339,13 @@ public class MongoDbPojo {
         String year = doc.getString("year");
         String imageUrl = doc.getString("imageURL");
         boolean a = doc.getBoolean("available");
+        int copies = doc.getInteger("copies");
+        int total = doc.getInteger("total");
 
         abook = new Audiobook(itemType, title, author, length, year, imageUrl);
         abook.setAvailable(a);
+        abook.setTotal(total);
+        abook.setCopies(copies);
         return abook;
     }
 
@@ -339,9 +358,13 @@ public class MongoDbPojo {
         String year = doc.getString("year");
         String imageUrl = doc.getString("imageURL");
         boolean a = doc.getBoolean("available");
+        int copies = doc.getInteger("copies");
+        int total = doc.getInteger("total");
 
         game = new Game(itemType, title, year, imageUrl);
         game.setAvailable(a);
+        game.setTotal(total);
+        game.setCopies(copies);
         return game;
     }
 

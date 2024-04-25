@@ -11,6 +11,14 @@ public class Item implements Serializable {
 
     public int copies;
 
+    public int total;
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {this.total = total;}
+
     public int getCopies() {
         return copies;
     }
@@ -46,8 +54,7 @@ public class Item implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return available == item.available &&
-                Objects.equals(title, item.title) &&
+        return Objects.equals(title, item.title) &&
                 Objects.equals(itemType, item.itemType) &&
                 Objects.equals(year, item.year) &&
                 Objects.equals(imageURL, item.imageURL);
