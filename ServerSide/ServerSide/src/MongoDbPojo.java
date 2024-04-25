@@ -241,6 +241,12 @@ public class MongoDbPojo {
 
     }
 
+    public static String retrievePfp(String username) {
+        Document query = new Document("username", username);
+        Document member = collection.find(query).first();
+        return member.getString("profilePic");
+    }
+
 
     private static Book createBookFromDocument(Document doc) {
         // Extract fields from document and create Book object

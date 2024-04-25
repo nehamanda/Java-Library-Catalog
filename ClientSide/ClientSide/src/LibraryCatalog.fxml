@@ -52,11 +52,11 @@
                   <CheckBox fx:id="holdchk" layoutX="22.0" layoutY="385.0" mnemonicParsing="false" text="My holds" />
                   <Button fx:id="filter" layoutX="86.0" layoutY="438.0" mnemonicParsing="false" onAction="#filterItems" text="Filter">
                      <font>
-                        <Font size="14.0" />
+                        <Font size="18.0" />
                      </font></Button>
                   <Button fx:id="resetFilters" layoutX="192.0" layoutY="440.0" mnemonicParsing="false" onAction="#resetFilters" text="Reset">
                      <font>
-                        <Font size="14.0" />
+                        <Font size="18.0" />
                      </font>
                   </Button>
                </children></AnchorPane>
@@ -69,7 +69,7 @@
                         <Font name="Droid Sans" size="23.0" />
                      </font>
                   </Label>
-                  <Button fx:id="checkout" layoutX="452.0" layoutY="6.0" mnemonicParsing="false" onAction="#checkOut" text="Check Out Item">
+                  <Button fx:id="checkout" layoutX="480.0" layoutY="6.0" mnemonicParsing="false" onAction="#checkOut" text="Check Out Item">
                      <font>
                         <Font size="16.0" />
                      </font></Button>
@@ -77,7 +77,7 @@
         </items>
       </SplitPane>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8f646c" height="105.0" stroke="BLACK" strokeType="INSIDE" width="1003.0" />
-      <Label layoutX="14.0" layoutY="14.0" text="My Account" textFill="WHITE">
+      <Label fx:id="myaccount" layoutX="14.0" layoutY="14.0" onMouseClicked="#myAccountClicked" text="My Account" textFill="WHITE">
          <font>
             <Font name="Droid Sans Bold" size="21.0" />
          </font>
@@ -106,6 +106,8 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Label>
+      <Rectangle fx:id="account" arcHeight="5.0" arcWidth="5.0" disable="true" fill="WHITE" height="637.0" layoutY="106.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="1003.0" />
+      <ImageView fx:id="pfp" fitHeight="50.0" fitWidth="54.0" layoutX="140.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" />
 
    </children>
 </AnchorPane>

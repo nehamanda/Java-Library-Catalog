@@ -5,11 +5,21 @@ public class Member {
     private String username;
     private String password;
     public List<Item> borrowedItems;
+
+    private String profilePic;
     // Other properties and constructors
     public Member() {}
     public Member(String username) {
         this.username = username;
         borrowedItems = new ArrayList<Item>();
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public String getUsername() {

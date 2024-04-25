@@ -103,8 +103,11 @@ public class ServerSide {
                         String user = reader.readLine();
                         List<Item> items = MongoDbPojo.retrieveUserList(user);// issue here
                         out.writeObject(items);
+                        String profilePic = MongoDbPojo.retrievePfp(user);
+                        out.writeObject(profilePic);
                         out.flush();
                     }
+
                     else if (request != null){
                         // Read username from the client
                         String username = reader.readLine();

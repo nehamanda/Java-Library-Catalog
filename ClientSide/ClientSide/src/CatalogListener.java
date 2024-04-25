@@ -8,6 +8,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import javax.swing.text.Document;
@@ -60,6 +64,15 @@ public class CatalogListener implements Initializable {
     @FXML
     private CheckBox holdchk;
 
+    @FXML
+    private Label myaccount;
+
+    @FXML
+    private Rectangle account;
+
+    @FXML
+    private ImageView pfp;
+
     public Socket socket;
 
     public ObjectOutputStream out;
@@ -95,8 +108,10 @@ public class CatalogListener implements Initializable {
         writer.println(username);
         writer.flush();
         List<Item> items = (List<Item>) in.readObject();
+        String imageLink = (String) in.readObject();
         member.borrowedItems = items;
-
+        Image image = new Image(imageLink);
+        pfp.setImage(image);
     }
 
 
@@ -175,6 +190,20 @@ public class CatalogListener implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+
+    }
+
+    public void myAccountClicked() {
+        if (myaccount.getText().equals("My Account")) {
+            account.setDisable(false);
+            account.setVisible(true);
+            myaccount.setText("Back");
+        }
+        else {
+            account.setDisable(true);
+            account.setVisible(false);
+            myaccount.setText("My Account");
+        }
 
     }
 
