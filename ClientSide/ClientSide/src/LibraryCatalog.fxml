@@ -23,11 +23,11 @@
                         <Font name="Droid Sans" size="14.0" />
                      </font></Label>
                   <ChoiceBox fx:id="search" layoutX="125.0" layoutY="9.0" prefHeight="26.0" prefWidth="221.0" />
-                  <TextField layoutX="125.0" layoutY="46.0" prefHeight="26.0" prefWidth="186.0">
+                  <TextField fx:id="searchbar" layoutX="125.0" layoutY="46.0" prefHeight="26.0" prefWidth="186.0">
                      <font>
                         <Font name="Droid Sans" size="14.0" />
                      </font></TextField>
-                  <Button layoutX="316.0" layoutY="47.0" mnemonicParsing="false" text="OK" />
+                  <Button fx:id="searchgo" layoutX="316.0" layoutY="47.0" mnemonicParsing="false" onAction="#search" text="OK" />
                   <CheckBox fx:id="bookchk" layoutX="22.0" layoutY="153.0" mnemonicParsing="false" text="Books" />
                   <CheckBox fx:id="abookchk" layoutX="22.0" layoutY="183.0" mnemonicParsing="false" text="Audiobooks" />
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8f646d" height="30.0" layoutX="-3.0" layoutY="85.0" stroke="TRANSPARENT" strokeType="INSIDE" width="370.0" />

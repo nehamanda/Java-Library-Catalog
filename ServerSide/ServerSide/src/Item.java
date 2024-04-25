@@ -8,6 +8,15 @@ public class Item implements Serializable {
     public String year;
 
     public String imageURL;
+
+    public int copies;
+
+    public int getCopies() {
+        return copies;
+    }
+    public void setCopies(int copies) {
+        this.copies = copies;
+    }
     public String getTitle() {
         return title;
     }

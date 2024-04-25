@@ -28,6 +28,9 @@ public class CatalogListener implements Initializable {
     private ChoiceBox search;
 
     @FXML
+    private TextField searchbar;
+
+    @FXML
     private ListView itemListView;
 
     @FXML
@@ -203,6 +206,39 @@ public class CatalogListener implements Initializable {
             }
         }
 
+        itemListView.setItems(filteredItems);
+        itemListView.setCellFactory(itemListView -> new ItemListCell());
+    }
+
+    public void search() throws IOException, ClassNotFoundException {
+        String criteria = (String) search.getValue();
+        String val = searchbar.getText();
+        writer.println("getItems");
+        writer.flush();
+        List<Item> items = (List<Item>) in.readObject();
+        ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+        ObservableList<Item> filteredItems = FXCollections.observableArrayList();
+        if (criteria.equals("Title")) {
+            for (Item item : catalogItems) {
+                if (item.getTitle().contains(val)) {
+                    filteredItems.add(item);
+                }
+            }
+        }
+        else if (criteria.equals("Author")) {
+            for (Item item : catalogItems) {
+                if (item instanceof Book) {
+                    if (((Book) item).getAuthor().contains(val)) {
+                        filteredItems.add(item);
+                    }
+                }
+                else if (item instanceof Audiobook) {
+                    if (((Audiobook) item).getAuthor().contains(val)) {
+                        filteredItems.add(item);
+                    }
+                }
+            }
+        }
         itemListView.setItems(filteredItems);
         itemListView.setCellFactory(itemListView -> new ItemListCell());
     }

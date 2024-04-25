@@ -173,7 +173,7 @@ public class MongoDbPojo {
             if (!item.getBoolean("available")) {
                 Document query = new Document("username", username);
                 Document member = collection.find(query).first();
-                List<Item> borrowList = (List) member.get("borrowedItems");
+                List<Item> borrowListItem = retrieveUserList(username);
                 String itemType = item.getString("itemType");
                 Item checkedout;
                 switch (itemType) {
@@ -195,8 +195,8 @@ public class MongoDbPojo {
                 }
                 item.replace("available", false, true);
                 collection2.findOneAndReplace(Filters.eq("title", itemName), item);
-                borrowList.remove(checkedout); //issue here
-                member.replace("borrowedItems", borrowList);
+                borrowListItem.remove(checkedout); //issue here
+                member.replace("borrowedItems", borrowListItem);
                 collection.findOneAndReplace(Filters.eq("username", username), member);
                 return true;
             }
