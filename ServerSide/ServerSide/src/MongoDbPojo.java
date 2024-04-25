@@ -2,6 +2,7 @@ import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
+import org.mindrot.bcrypt.BCrypt;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -51,16 +52,23 @@ public class MongoDbPojo {
         //collection2.insertMany(itemList);*/
 
 
-        ArrayList<Member> memberList = new ArrayList<>();
-        memberList.add(new Member("neha", "0818"));
-        memberList.add(new Member("shikha", "0511"));
-        memberList.add(new Member("nehak", "0213"));
-        memberList.add(new Member("jake", "0712"));
-        memberList.add(new Member("connor", "0319"));
+//        ArrayList<Member> memberList = new ArrayList<>();
+//        memberList.add(new Member("neha", "0818"));
+//        memberList.add(new Member("shikha", "0511"));
+//        memberList.add(new Member("nehak", "0213"));
+//        memberList.add(new Member("jake", "0712"));
+//        memberList.add(new Member("connor", "0319"));
+
+        Document item = collection.find(Filters.eq("username", "shikha")).first();
+        String hash = BCrypt.gensalt();
+        String hashedpw = BCrypt.hashpw("0511", hash);
+        item.replace("password", hashedpw);
+        item.replace("hash", hash);
+        collection.findOneAndReplace(Filters.eq("username", "shikha"), item);
         //collection.insertMany(memberList);
 
         //FIND AND READ
-        //Item item = collection2.find(Filters.eq("name", "Adidas Ultraboost")).first();
+        //Item item = collection2.find(Filters.eq("name", "neha")).first();
         //System.out.println(item);
 
         //UPDATE
@@ -90,9 +98,13 @@ public class MongoDbPojo {
     }
 
     public static boolean authenticate(String username, String password) {
-        Document userQuery = new Document("username", username).append("password", password);
-        Document user = collection.find(userQuery).first();
-        return user != null;
+        Document find = collection.find(Filters.eq("username", username)).first();
+        if (find == null) {
+            return false;
+        }
+        String hash = find.getString("hash");
+        String pw = BCrypt.hashpw(password, hash);
+        return pw.equals(find.getString("password"));
     }
 
     public static List retrieveItems() {

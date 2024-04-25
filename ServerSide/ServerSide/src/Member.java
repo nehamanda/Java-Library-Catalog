@@ -7,12 +7,18 @@ public class Member {
     private List<Item> borrowedItems;
 
     private String profilePic;
+
+    private String hash;
     // Other properties and constructors
     public Member() {}
     public Member (String username, String password) {
         this.username = username;
         this.password = password;
         borrowedItems = new ArrayList<Item>();
+    }
+
+    public String getHash() {
+        return hash;
     }
 
     public String getUsername() {
