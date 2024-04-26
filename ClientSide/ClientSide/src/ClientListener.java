@@ -76,11 +76,21 @@ public class ClientListener {
 
                 // Check if login was successful
                 if (response.equals("success")) {
-                    new Thread(() -> {
+                    Thread thread = new Thread(() -> {
                         showAlert("Login successful!");
                     });
+                    thread.start();
                     socket.close();
-                    switchToCatalog(event);
+                    Platform.runLater(() -> {
+                        try {
+                            switchToCatalog(event);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+
 
                     // Proceed to next screen or perform other actions
                 } else {

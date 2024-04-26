@@ -23,7 +23,7 @@ public class ItemListCell extends ListCell<Item> {
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
                         + "Author: " + author + "\n"
-                        + "Format: " + itemType + "\n" + "Pages: " + pages + "\nYear: " + year + "\n" + availability;
+                        + "Format: " + itemType + "\n" + "Pages: " + pages + "\nYear: " + year + "\n" + availability + "\n\n\n\n";
 
                 setText(null); // Clear existing text
                 setGraphic(null); // Clear existing graphic
@@ -42,7 +42,7 @@ public class ItemListCell extends ListCell<Item> {
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
-                        + "Format: " + itemType + "\n" + "Year: " + year + "\n" + availability;
+                        + "Format: " + itemType + "\n" + "Year: " + year + "\n" + availability + "\n\n\n\n";
 
                 setText(null); // Clear existing text
                 setGraphic(null); // Clear existing graphic
@@ -62,7 +62,7 @@ public class ItemListCell extends ListCell<Item> {
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n"
-                        + "Format: " + itemType + "\n" + "Length: " + length + "\nYear: " + year + "\n" + availability;
+                        + "Format: " + itemType + "\n" + "Length: " + length + "\nYear: " + year + "\n" + availability + "\n\n\n\n";
 
                 setText(null); // Clear existing text
                 setGraphic(null); // Clear existing graphic
@@ -84,7 +84,7 @@ public class ItemListCell extends ListCell<Item> {
 
                 // Customize the formatting as needed
                 String formattedText = "Title: " + title + "\n" + "Author: " + author + "\n"
-                        + "Format: " + itemType + "\n" + "Length: " + length + "\nYear: " + year + "\n" + availability;
+                        + "Format: " + itemType + "\n" + "Length: " + length + "\nYear: " + year + "\n" + availability + "\n\n\n\n";
 
                 setText(null); // Clear existing text
                 setGraphic(null); // Clear existing graphic

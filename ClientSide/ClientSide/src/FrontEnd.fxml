@@ -24,7 +24,7 @@
       <cursor>
          <Cursor fx:constant="TEXT" />
       </cursor></TextField>
-    <Button layoutX="369.0" layoutY="329.0" onAction="#loginButtonClicked" prefHeight="29.0" prefWidth="78.0" text="Login" textFill="#840606">
+    <Button fx:id="loginButton" layoutX="369.0" layoutY="329.0" onAction="#loginButtonClicked" prefHeight="29.0" prefWidth="78.0" text="Login" textFill="#840606">
       <font>
          <Font name="Headline R" size="14.0" />
       </font></Button>
