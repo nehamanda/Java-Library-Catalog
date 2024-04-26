@@ -106,6 +106,23 @@ public class MongoDbPojo {
         String pw = BCrypt.hashpw(password, hash);
         return pw.equals(find.getString("password"));
     }
+    public static boolean createaccount(String username, String password) {
+        Document find = collection.find(Filters.eq("username", username)).first();
+        if (find != null) {
+            return false;
+        }
+        String newHash = BCrypt.gensalt();
+        String pw = BCrypt.hashpw(password, newHash);
+        Member newM = new Member(username, pw);
+        Document document = new Document();
+        document.append("username", username);
+        document.append("password", pw);
+        document.append("borrowedItems", newM.getBorrowedItems());
+        document.append("hash", newHash);
+        document.append("profilePic", "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg");
+        collection.insertOne(document);
+        return true;
+    }
 
     public static boolean changepw(String username, String password) {
         Document find = collection.find(Filters.eq("username", username)).first();

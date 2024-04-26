@@ -28,6 +28,7 @@ public class ClientListener {
     @FXML
     private ListView itemListView;
 
+
     public Socket socket;
 
     public ObjectOutputStream out;
@@ -84,6 +85,43 @@ public class ClientListener {
                     // Proceed to next screen or perform other actions
                 } else {
                     showAlert("Login failed. Please try again.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Error connecting to server.");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            showAlert("Please enter a username.");
+        }
+    }
+
+    public void createAccount(ActionEvent event) throws IOException {
+        initializeSocket();
+        String enteredUsername = usernameField.getText();
+        String enteredPassword = passwordField.getText();
+        user = enteredUsername;
+        if (!enteredUsername.isEmpty() && !enteredPassword.isEmpty()) {
+            try {
+                // Send the username to the server
+                writer.println("createaccount");
+                writer.println(enteredUsername);
+                writer.println(enteredPassword);
+                writer.flush();
+
+                // Receive response from the server
+                String response = (String) in.readObject();
+
+                // Check if login was successful
+                if (response.equals("success")) {
+                    showAlert("Account created successfully!");
+                    socket.close();
+                    switchToCatalog(event);
+
+                    // Proceed to next screen or perform other actions
+                } else {
+                    showAlert("Username taken. Please try again.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

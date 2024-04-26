@@ -116,6 +116,30 @@ public class CatalogListener implements Initializable {
 
     public Member member;
 
+    public enum Strength {
+        WEAK, MEDIUM, STRONG
+    }
+
+    public static Strength checkPasswordStrength(String password) {
+        int length = password.length();
+        boolean hasLowerCase = !password.equals(password.toUpperCase());
+        boolean hasUpperCase = !password.equals(password.toLowerCase());
+        boolean hasDigit = password.matches(".*\\d.*");
+        boolean hasSpecialChar = !password.matches("[A-Za-z0-9]*");
+
+        // Check length
+        if (length < 4) {
+            return Strength.WEAK;
+        }
+
+        // Check complexity
+        if (!hasLowerCase || !hasUpperCase || !hasDigit || !hasSpecialChar) {
+            return Strength.MEDIUM;
+        }
+
+        return Strength.STRONG;
+    }
+
     public void initializeSocket() throws IOException {
         if (!init) {
             socket = new Socket("localhost", 12346);

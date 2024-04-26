@@ -131,6 +131,24 @@ public class ServerSide {
                         }
                         out.flush();
                     }
+                    else if (request != null && request.contains("createaccount")){
+                        // Read username from the client
+                        String username = reader.readLine();
+                        String password = reader.readLine();
+
+                        // Authenticate the username
+                        boolean isAuthenticated = MongoDbPojo.createaccount(username, password);
+
+                        // Send authentication result back to the client
+                        if (isAuthenticated) {
+                            out.writeObject("success");
+
+                        } else {
+                            out.writeObject("failure");
+                        }
+                        out.flush();
+                    }
+
                     else if (request != null){
                         // Read username from the client
                         String username = reader.readLine();
