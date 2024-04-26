@@ -252,7 +252,7 @@ public class CatalogListener implements Initializable {
     public void resetPfp() throws IOException, ClassNotFoundException {
         String newpfp = enterimageaddress.getText();
         Image image = new Image(newpfp);
-        if (image.getRequestedHeight() == 0.0) {
+        if (image == null) {
             showAlert("Profile picture change failed. Choose another image.");
         }
         else {
