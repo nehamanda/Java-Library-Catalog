@@ -48,7 +48,13 @@ public class ServerSide {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 while(true) {
-                    String request = reader.readLine();
+                    String request = null;
+                    try {
+                        request = reader.readLine();
+                    }
+                    catch (SocketException s) {
+                        clientSocket.close();
+                    }
                     if (request == null) {
 
                     }

@@ -251,9 +251,18 @@ public class CatalogListener implements Initializable {
 
     public void resetPfp() throws IOException, ClassNotFoundException {
         String newpfp = enterimageaddress.getText();
-        Image image = new Image(newpfp);
+        Image image = null;
+        try {
+            image = new Image(newpfp);
+        }
+        catch (Exception e) {
+            showAlert("Profile picture change failed. Choose another image.");
+            return;
+        }
+
         if (image == null) {
             showAlert("Profile picture change failed. Choose another image.");
+            return;
         }
         else {
             writer.println("newpfp");
@@ -388,7 +397,13 @@ public class CatalogListener implements Initializable {
 
     public void search() throws IOException, ClassNotFoundException {
         String criteria = (String) search.getValue();
+        if (criteria == null) {
+            return;
+        }
         String val = searchbar.getText();
+        if (val.equals("")) {
+            return;
+        }
         writer.println("getItems");
         writer.flush();
         List<Item> items = (List<Item>) in.readObject();
