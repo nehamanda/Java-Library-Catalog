@@ -27,7 +27,7 @@
                      <font>
                         <Font name="Droid Sans" size="14.0" />
                      </font></TextField>
-                  <Button fx:id="searchgo" layoutX="316.0" layoutY="47.0" mnemonicParsing="false" onAction="#search" text="OK" />
+                  <Button fx:id="searchgo" layoutX="316.0" layoutY="47.0" mnemonicParsing="false" onAction="#search" text="Go" />
                   <CheckBox fx:id="bookchk" layoutX="22.0" layoutY="153.0" mnemonicParsing="false" text="Books" />
                   <CheckBox fx:id="abookchk" layoutX="22.0" layoutY="183.0" mnemonicParsing="false" text="Audiobooks" />
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8f646d" height="30.0" layoutX="-3.0" layoutY="85.0" stroke="TRANSPARENT" strokeType="INSIDE" width="370.0" />
@@ -107,7 +107,7 @@
          </cursor>
       </Label>
       <Rectangle fx:id="account" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="637.0" layoutY="106.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.5" visible="false" width="370.0" />
-      <ImageView fx:id="pfp" fitHeight="50.0" fitWidth="54.0" layoutX="140.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="pfp" fitHeight="50.0" fitWidth="54.0" layoutX="140.0" layoutY="2.0" pickOnBounds="true" />
       <Label fx:id="accounttxt" layoutX="27.0" layoutY="119.0" text="My Account" textFill="#8f646c" underline="true" visible="false">
          <font>
             <Font name="Droid Sans" size="30.0" />

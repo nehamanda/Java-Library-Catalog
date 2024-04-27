@@ -162,13 +162,4 @@ public class ClientListener {
         stage.setScene(scene);
         stage.show();
     }
-
-    public void switchToLogin(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-
-    }
 }
