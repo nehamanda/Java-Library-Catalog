@@ -1,7 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 public class Audiobook extends Item {
 
     private String length;
     private String author;
+    public List<String> holds;
 
     public Audiobook() {}
 
@@ -14,6 +20,15 @@ public class Audiobook extends Item {
         this.length = length;
         this.year = year;
         this.imageURL = imageURL;
+        holds = new ArrayList<>();
+    }
+
+    public List<String> getHolds() {
+        return holds;
+    }
+
+    public void setHolds(List<String> holds) {
+        this.holds = holds;
     }
 
     public String getAuthor() {

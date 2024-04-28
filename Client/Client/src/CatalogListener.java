@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -61,8 +62,6 @@ public class CatalogListener implements Initializable {
     @FXML
     private CheckBox hasitemchk;
 
-    @FXML
-    private CheckBox holdchk;
 
     @FXML
     private Label myaccount;
@@ -97,6 +96,10 @@ public class CatalogListener implements Initializable {
     @FXML
     private Label librarycatalog;
 
+    @FXML
+    private AnchorPane rect;
+
+
 
 
     public Socket socket;
@@ -116,29 +119,6 @@ public class CatalogListener implements Initializable {
 
     public Member member;
 
-    public enum Strength {
-        WEAK, MEDIUM, STRONG
-    }
-
-    public static Strength checkPasswordStrength(String password) {
-        int length = password.length();
-        boolean hasLowerCase = !password.equals(password.toUpperCase());
-        boolean hasUpperCase = !password.equals(password.toLowerCase());
-        boolean hasDigit = password.matches(".*\\d.*");
-        boolean hasSpecialChar = !password.matches("[A-Za-z0-9]*");
-
-        // Check length
-        if (length < 4) {
-            return Strength.WEAK;
-        }
-
-        // Check complexity
-        if (!hasLowerCase || !hasUpperCase || !hasDigit || !hasSpecialChar) {
-            return Strength.MEDIUM;
-        }
-
-        return Strength.STRONG;
-    }
 
     public void initializeSocket() throws IOException {
         if (!init) {
@@ -176,6 +156,7 @@ public class CatalogListener implements Initializable {
         String[] choices = {"Title", "Author"};
         search.getItems().addAll(choices);
         search.setStyle("-fx-font: 14px \"Droid Sans\";");
+
 
         try  {
             writer.println("getItems");
@@ -219,18 +200,77 @@ public class CatalogListener implements Initializable {
 //                    itemListView.setCellFactory(itemListView -> new ItemListCell());
 //                }
                 if (member.hasItem(selected)) {
+                    checkout.setDisable(false);
                     checkout.setText("Return Item");
                 }
                 else if (selected.isAvailable()) {
+                    checkout.setDisable(false);
                     checkout.setText("Check Out Item");
                 }
                 else {
+                    checkout.setDisable(false);
                     checkout.setText("Put Item on Hold");
+
                 }
 
             }
         });
 
+    }
+
+    public void holdInit(Item selected) throws IOException, ClassNotFoundException {
+        writer.println("held");
+        writer.println(selected.getTitle());
+        writer.println(username);
+        writer.flush();
+        String response = (String) in.readObject();
+        if (response.equals("success")) {
+            checkout.setDisable(true);
+            checkout.setText("Put Item on Hold");
+        }
+        else {
+            holdInit(selected);
+            writer.println("init");
+            writer.println(username);
+            writer.flush();
+            List<Item> items = (List<Item>) in.readObject();
+            if (!items.contains(selected)) {
+                checkout.setDisable(false);
+                checkout.setText("Put Item on Hold");
+            }
+            else {
+                checkout.setDisable(false);
+                checkout.setText("Return Item");
+                member.borrowItem(selected);
+                showAlert("Your held item has been checked out to you!");
+
+            }
+
+        }
+    }
+
+    public void refresh() throws IOException, ClassNotFoundException {
+        writer.println("init");
+        writer.println(username);
+        writer.flush();
+        List<Item> useritems = (List<Item>) in.readObject();
+        String ok = (String) in.readObject();
+        if (!useritems.equals(member.borrowedItems)) {
+            Item selected = null;
+            for (Item i : useritems) {
+                if (!member.borrowedItems.contains(i)) {
+                    selected = i;
+                }
+            }
+            member.borrowItem(selected);
+            showAlert("Your held item has been checked out to you!");
+        }
+        writer.println("getItems");
+        writer.flush();
+        List<Item> items = (List<Item>) in.readObject();
+        ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
+        itemListView.setItems(catalogItems);
+        itemListView.setCellFactory(itemListView -> new ItemListCell());
     }
 
     public void resetPassword() throws IOException, ClassNotFoundException {
@@ -316,8 +356,15 @@ public class CatalogListener implements Initializable {
             ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
             ObservableList<Item> filteredItems = FXCollections.observableArrayList();
 
+            writer.println("init");
+            writer.println(username);
+            writer.flush();
+            List<Item> useritems = (List<Item>) in.readObject();
+            String ok = (String) in.readObject();
+
+
             for (Item item : catalogItems) {
-                if (member.hasItem(item)) {
+                if (useritems.contains(item)) {
                     filteredItems.add(item);
                 }
             }
@@ -359,6 +406,11 @@ public class CatalogListener implements Initializable {
         List<Item> items = (List<Item>) in.readObject();
         ObservableList<Item> catalogItems = FXCollections.observableArrayList(items);
         ObservableList<Item> filteredItems = FXCollections.observableArrayList();
+        writer.println("init");
+        writer.println(username);
+        writer.flush();
+        List<Item> useritems = (List<Item>) in.readObject();
+        String ok = (String) in.readObject();
 
 
         for (Item item : catalogItems) {
@@ -367,14 +419,14 @@ public class CatalogListener implements Initializable {
                     (gamechk.isSelected() && item instanceof Game) ||
                     (moviechk.isSelected() && item instanceof Movie)) {
                 if ((availablechk.isSelected() && !item.isAvailable()) ||
-                        (hasitemchk.isSelected() && !member.hasItem(item))) // ADD HOLD BOX CHECK HERE
+                        (hasitemchk.isSelected() && !useritems.contains(item))) // ADD HOLD BOX CHECK HERE
                     {
                         if ((availablechk.isSelected() && !item.isAvailable()) &&
-                                (hasitemchk.isSelected() && member.hasItem(item))) {
+                                (hasitemchk.isSelected() && useritems.contains(item))) {
                             filteredItems.add(item);
                         }
                         else if ((availablechk.isSelected() && item.isAvailable()) &&
-                                (hasitemchk.isSelected() && !member.hasItem(item))) {
+                                (hasitemchk.isSelected() && !useritems.contains(item))) {
                             filteredItems.add(item);
                         }
                 }
@@ -386,7 +438,7 @@ public class CatalogListener implements Initializable {
             else if (!abookchk.isSelected() && !bookchk.isSelected()
                     && !gamechk.isSelected() && !moviechk.isSelected() &&
                     ((availablechk.isSelected() && item.isAvailable()) ||
-                    (hasitemchk.isSelected() && member.hasItem(item)))) {
+                    (hasitemchk.isSelected() && useritems.contains(item)))) {
                 filteredItems.add(item);
             }
         }
@@ -466,6 +518,11 @@ public class CatalogListener implements Initializable {
                 // Update UI or perform other actions
             } else {
                 showAlert("Checkout failed. Item may be unavailable or already checked out.");
+                checkout.setText("Put Item on Hold");
+                List<Item> items = (List<Item>) in.readObject();
+                ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                itemListView.setItems(observableList);
+                itemListView.setCellFactory(itemListView -> new ItemListCell());
             }
         }
         else if (checkout.getText().equals("Return Item")) {
@@ -491,6 +548,44 @@ public class CatalogListener implements Initializable {
 
         }
         else if (checkout.getText().equals("Put Item on Hold")) {
+            Item selectedItem = (Item) itemListView.getSelectionModel().getSelectedItem();
+            writer.println("init");
+            writer.println(username);
+            writer.flush();
+            List<Item> useritems = (List<Item>) in.readObject();
+            String ok = (String) in.readObject();
+            if (!useritems.equals(member.borrowedItems)) {
+                if (!member.borrowedItems.contains(selectedItem)) {
+                    member.borrowItem(selectedItem);
+                    showAlert("Your held item has been checked out to you!");
+                    checkout.setText("Return Item");
+                    return;
+                }
+            }
+            writer.println("holdrequest");
+            writer.println(selectedItem.getTitle());
+            writer.println(username);
+            writer.flush();
+
+            String response = (String) in.readObject();
+            if (response.equals("success")) {
+                showAlert("Hold request successful!");
+                checkout.setDisable(true);
+                List<Item> items = (List<Item>) in.readObject();
+                ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                itemListView.setItems(observableList);
+                itemListView.setCellFactory(itemListView -> new ItemListCell());
+
+                // Update UI or perform other actions
+            } else {
+                showAlert("Hold request failed. You may already have a hold on this item.");
+                checkout.setDisable(true);
+                List<Item> items = (List<Item>) in.readObject();
+                ObservableList<Item> observableList = FXCollections.observableArrayList(items);
+                itemListView.setItems(observableList);
+                itemListView.setCellFactory(itemListView -> new ItemListCell());
+
+            }
 
         }
 

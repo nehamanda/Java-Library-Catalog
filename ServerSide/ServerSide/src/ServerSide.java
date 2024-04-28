@@ -76,6 +76,43 @@ public class ServerSide {
                         }
                         else {
                             out.writeObject("failure");
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                            out.flush();
+                            updates = true;
+                        }
+
+                    }
+                    else if (request != null && request.contains("holdrequest")) {
+                        String checked = reader.readLine();
+                        String user1 = reader.readLine();
+                        boolean valid = MongoDbPojo.hold(checked, user1);
+                        if (valid) {
+                            out.writeObject("success");
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                            out.flush();
+                            updates = true;
+                        }
+                        else {
+                            out.writeObject("failure");
+                            List<Item> items = MongoDbPojo.retrieveItems();
+                            out.writeObject(items);
+                            out.flush();
+                            updates = true;
+                        }
+
+                    }
+                    else if (request != null && request.contains("held")) {
+                        String checked = reader.readLine();
+                        String user1 = reader.readLine();
+                        boolean held = MongoDbPojo.held(checked, user1);
+                        if (held) {
+                            out.writeObject("success");
+                            out.flush();
+                        }
+                        else {
+                            out.writeObject("failure");
                             out.flush();
                         }
 
@@ -111,6 +148,12 @@ public class ServerSide {
                         out.writeObject(items);
                         String profilePic = MongoDbPojo.retrievePfp(user);
                         out.writeObject(profilePic);
+                        out.flush();
+                    }
+                    else if (request != null && request.contains("holdcheck")) {
+                        String user = reader.readLine();
+                        List<Item> items = MongoDbPojo.retrieveUserList(user);// issue here
+                        out.writeObject(items);
                         out.flush();
                     }
                     else if (request != null && request.contains("newpassword")) {
@@ -155,7 +198,7 @@ public class ServerSide {
                         out.flush();
                     }
 
-                    else if (request != null){
+                    else if (request != null && request.contains("login")){
                         // Read username from the client
                         String username = reader.readLine();
                         String password = reader.readLine();

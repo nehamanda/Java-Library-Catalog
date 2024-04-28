@@ -17,6 +17,7 @@ import com.mongodb.client.model.Filters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 public class MongoDbPojo {
     private static MongoClient mongo;
@@ -59,12 +60,10 @@ public class MongoDbPojo {
 //        memberList.add(new Member("jake", "0712"));
 //        memberList.add(new Member("connor", "0319"));
 
-        Document item = collection.find(Filters.eq("username", "shikha")).first();
-        String hash = BCrypt.gensalt();
-        String hashedpw = BCrypt.hashpw("0511", hash);
-        item.replace("password", hashedpw);
-        item.replace("hash", hash);
-        collection.findOneAndReplace(Filters.eq("username", "shikha"), item);
+        Document item = collection2.find(Filters.eq("title", "The Poppy War")).first();
+        Audiobook abook = createAudiobookFromDocument(item);
+        item.replace("holds", abook.getHolds());
+        collection2.findOneAndReplace(Filters.eq("title", "The Poppy War"), item);
         //collection.insertMany(memberList);
 
         //FIND AND READ
@@ -223,6 +222,50 @@ public class MongoDbPojo {
         return false;
     }
 
+    public static boolean hold(String itemName, String username) {
+        synchronized (collection2) {
+            Document item = collection2.find(Filters.eq("title", itemName)).first();
+            ArrayList<String> held = (ArrayList<String>) item.get("holds");
+            if (held.contains(username)) {return false;}
+            Document query = new Document("username", username);
+            Document member = collection.find(query).first();
+            List<Item> borrowList = (List) member.get("borrowedItems");
+            String itemType = item.getString("itemType");
+            Item checkedout;
+            switch (itemType) {
+                case "book":
+                    checkedout = createBookFromDocument(item);
+                    break;
+                case "movie":
+                    checkedout = createMovieFromDocument(item);
+                    break;
+                case "audiobook":
+                    checkedout = createAudiobookFromDocument(item);
+                    break;
+                case "game":
+                    checkedout = createGameFromDocument(item);
+                    break;
+                default:
+                    // Handle unknown item types or throw an exception
+                    throw new IllegalArgumentException("Unknown item type: " + itemType);
+            }
+            if (borrowList.contains(checkedout)) {return false;}
+            if (!item.getBoolean("available")) {
+                held.add(username);
+                item.replace("holds", held);
+                collection2.findOneAndReplace(Filters.eq("title", itemName), item);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean held(String itemName, String username) {
+        Document item = collection2.find(Filters.eq("title", itemName)).first();
+        ArrayList<String> held = (ArrayList<String>) item.get("holds");
+        return held.contains(username);
+    }
+
     public static boolean returnItem(String itemName, String username) {
         Document item = collection2.find(Filters.eq("title", itemName)).first();
         synchronized (collection2) {
@@ -255,6 +298,18 @@ public class MongoDbPojo {
                 borrowListItem.remove(checkedout); //issue here
                 member.replace("borrowedItems", borrowListItem);
                 collection.findOneAndReplace(Filters.eq("username", username), member);
+
+                ArrayList<String> held = (ArrayList<String>) item.get("holds");
+                if (held.isEmpty()) {
+                    return true;
+                }
+                String newuser = held.getFirst();
+                if (borrow(itemName, newuser)) {
+                    held.removeFirst();
+                    Document item1 = collection2.find(Filters.eq("title", itemName)).first();
+                    item1.replace("holds", held);
+                    collection2.findOneAndReplace(Filters.eq("title", itemName), item1);
+                }
                 return true;
             }
         }
@@ -317,12 +372,14 @@ public class MongoDbPojo {
         boolean a = doc.getBoolean("available");
         int copies = doc.getInteger("copies");
         int total = doc.getInteger("total");
+        List<String> holds = (List<String>) doc.get("holds");
 
         book = new Book(itemType, title, author, pageCount, year, imageUrl);
 
         book.setAvailable(a);
         book.setTotal(total);
         book.setCopies(copies);
+        book.setHolds(holds);
         return book;
     }
 
@@ -337,11 +394,13 @@ public class MongoDbPojo {
         boolean a = doc.getBoolean("available");
         int copies = doc.getInteger("copies");
         int total = doc.getInteger("total");
+        List<String> holds = (List<String>) doc.get("holds");
 
         movie = new Movie(itemType, title, length, year, imageUrl);
         movie.setAvailable(a);
         movie.setTotal(total);
         movie.setCopies(copies);
+        movie.setHolds(holds);
         return movie;
     }
 
@@ -358,11 +417,13 @@ public class MongoDbPojo {
         boolean a = doc.getBoolean("available");
         int copies = doc.getInteger("copies");
         int total = doc.getInteger("total");
+        List<String> holds = (List<String>) doc.get("holds");
 
         abook = new Audiobook(itemType, title, author, length, year, imageUrl);
         abook.setAvailable(a);
         abook.setTotal(total);
         abook.setCopies(copies);
+        abook.setHolds(holds);
         return abook;
     }
 
@@ -377,11 +438,13 @@ public class MongoDbPojo {
         boolean a = doc.getBoolean("available");
         int copies = doc.getInteger("copies");
         int total = doc.getInteger("total");
+        List<String> holds = (List<String>) doc.get("holds");
 
         game = new Game(itemType, title, year, imageUrl);
         game.setAvailable(a);
         game.setTotal(total);
         game.setCopies(copies);
+        game.setHolds(holds);
         return game;
     }
 

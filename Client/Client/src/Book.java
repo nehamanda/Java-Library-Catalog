@@ -33,12 +33,12 @@ public class Book extends Item {
     }
 
     public String getAuthor() {
-         return author;
-     }
+        return author;
+    }
 
-     public int getPages() {
-         return pages;
-     }
+    public int getPages() {
+        return pages;
+    }
 
 //    public List<Copy> getCopies() {
 //        return copies;

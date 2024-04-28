@@ -1,17 +1,11 @@
 
 import javafx.application.Application;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
-public class ClientSide extends Application {
+public class Client extends Application {
     static Stage primaryStage;
     private static Scene scene1;
     private static Parent root2;
