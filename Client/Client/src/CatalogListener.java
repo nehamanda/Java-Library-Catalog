@@ -1,11 +1,8 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,7 +12,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-import javax.swing.text.Document;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -122,7 +118,7 @@ public class CatalogListener implements Initializable {
 
     public void initializeSocket() throws IOException {
         if (!init) {
-            socket = new Socket("localhost", 12346);
+            socket = new Socket("localhost", 12345);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             writer = new PrintWriter(socket.getOutputStream());
@@ -322,7 +318,7 @@ public class CatalogListener implements Initializable {
 
     public void logoutClicked() throws IOException {
         socket.close();
-        Parent root = FXMLLoader.load(getClass().getResource("FrontEnd.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Resources/FrontEnd.fxml"));
         Stage stage = (Stage) logout.getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

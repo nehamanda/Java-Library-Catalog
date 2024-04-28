@@ -11,7 +11,7 @@ public class Client extends Application {
     private static Parent root2;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxml = new FXMLLoader(getClass().getResource("FrontEnd.fxml"));
+        FXMLLoader fxml = new FXMLLoader(getClass().getResource("Resources/FrontEnd.fxml"));
         Scene scene = new Scene(fxml.load());
         ClientListener listener = fxml.getController();
         listener.initializeSocket();

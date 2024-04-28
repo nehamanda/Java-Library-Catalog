@@ -303,9 +303,9 @@ public class MongoDbPojo {
                 if (held.isEmpty()) {
                     return true;
                 }
-                String newuser = held.getFirst();
+                String newuser = held.get(0);
                 if (borrow(itemName, newuser)) {
-                    held.removeFirst();
+                    held.remove(0);
                     Document item1 = collection2.find(Filters.eq("title", itemName)).first();
                     item1.replace("holds", held);
                     collection2.findOneAndReplace(Filters.eq("title", itemName), item1);

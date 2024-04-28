@@ -10,7 +10,7 @@
 <AnchorPane prefHeight="603.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientListener">
     <ImageView fitHeight="603.0" fitWidth="815.0" pickOnBounds="true">
         <image>
-            <Image url="@Images/shelves.jpg" />
+            <Image url="@shelves.jpg" />
         </image></ImageView>
    <Rectangle arcHeight="5.0" arcWidth="5.0" height="347.0" layoutX="190.0" layoutY="115.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="436.0" />
     <Label layoutX="238.0" layoutY="173.0" prefHeight="48.0" prefWidth="349.0" text="Manda Public Library" textFill="#b17575">

@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 
 public class Server {
-    private static final int PORT = 12346;
+    private static final int PORT = 12345;
     private static List<Member> members;
     private static List<Item> catalog;
 

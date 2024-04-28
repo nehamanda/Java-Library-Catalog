@@ -1,14 +1,10 @@
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
-import org.testfx.api.FxToolkit;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +17,7 @@ public class FXMLTest extends ApplicationTest{
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader fxml = new FXMLLoader(getClass().getResource("FrontEnd.fxml"));
+        FXMLLoader fxml = new FXMLLoader(getClass().getResource("Resources/FrontEnd.fxml"));
         Scene scene = new Scene(fxml.load());
         ClientListener listener = fxml.getController();
         listener.initializeSocket();

@@ -46,7 +46,7 @@ public class ClientListener {
 
     public void initializeSocket() throws IOException {
         if (!init) {
-            socket = new Socket("localhost", 12346);
+            socket = new Socket("localhost", 12345);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             writer = new PrintWriter(socket.getOutputStream());
@@ -154,7 +154,7 @@ public class ClientListener {
     }
 
     public void switchToCatalog(ActionEvent event) throws IOException, ClassNotFoundException {
-        FXMLLoader fxml = new FXMLLoader(getClass().getResource("LibraryCatalog.fxml"));
+        FXMLLoader fxml = new FXMLLoader(getClass().getResource("Resources/LibraryCatalog.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(fxml.load());
         CatalogListener listener = fxml.getController();
